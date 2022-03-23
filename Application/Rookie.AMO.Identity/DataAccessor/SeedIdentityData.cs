@@ -154,7 +154,51 @@ namespace Rookie.AMO.Identity.DataAccessor
                 {
                     throw new Exception(result.Errors.First().Description);
                 }
+
             }
+
+            //var user3 = userMgr.FindByNameAsync("Staff2").Result;
+            //if (user3 == null)
+            //{
+            //    user3 = new User
+            //    {
+            //        FirstName = "Khanh Son",
+            //        LastName = "Hoang",
+            //        FullName = "Hoang KHanh Son",
+            //        UserName = "HKSon1",
+            //        CodeStaff = "SD0003",
+            //        Type = "Staff",
+            //        Gender = "Male",
+            //        Location = "Ho Chi Minh",
+            //        JoinedDate = DateTime.Now,
+            //        DateOfBirth = DateTime.ParseExact("2000-08-02", "yyyy-MM-dd", null)
+            //    };
+            //    var result = userMgr.CreateAsync(user3, "123456@a").Result;
+            //    if (!result.Succeeded)
+            //    {
+            //        throw new Exception(result.Errors.First().Description);
+            //    }
+
+  
+
+            //    result = userMgr.AddClaimsAsync(user3, new List<Claim>
+            //        {
+            //            new Claim(IdentityModel.JwtClaimTypes.GivenName, "Khanh Son"),
+            //            new Claim(IdentityModel.JwtClaimTypes.FamilyName, "Hoang"),
+            //            new Claim(IdentityModel.JwtClaimTypes.Role, "Staff"),
+            //            new Claim("location", "Ho Chi Minh")
+            //        }).Result;
+
+            //    if (!result.Succeeded)
+            //    {
+            //        throw new Exception(result.Errors.First().Description);
+            //    }
+            //    result = userMgr.AddToRoleAsync(user3, "Staff").Result;
+            //    if (!result.Succeeded)
+            //    {
+            //        throw new Exception(result.Errors.First().Description);
+            //    }
+            //}
         }
     }
 }

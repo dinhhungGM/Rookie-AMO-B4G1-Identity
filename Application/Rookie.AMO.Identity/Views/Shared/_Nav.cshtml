@@ -13,16 +13,16 @@
         <a href="~/" id="Logo_mjv">
             <img id="Logo_mjx" src="~/logo.png">
             <div id="Online_Asset_Management_mjw">
+
                 <span>Online Asset Management</span>
             </div>
         </a>
 
         @if (!string.IsNullOrWhiteSpace(name))
         {
-            <ul class="navbar-nav mr-auto user-authenticated">
+            <ul class="navbar-nav mr-auto user-authenticated ">
                 <li class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">@name <b class="caret"></b></a>
-
                     <div class="dropdown-menu">
                         <a class="dropdown-item" asp-action="Logout" asp-controller="Account">Logout</a>
                         <a class="dropdown-item" asp-action="ChangePassword" asp-controller="Account">Change Password</a>
