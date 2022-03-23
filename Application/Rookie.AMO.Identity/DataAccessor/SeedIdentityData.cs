@@ -91,16 +91,16 @@ namespace Rookie.AMO.Identity.DataAccessor
             {
                 user1 = new User
                 {
-                    FirstName = "John",
+                    FirstName = "Sarah",
                     LastName = "Doe",
-                    FullName = "John Doe",
+                    FullName = "Sarah Doe",
                     UserName = "Admin1",
                     CodeStaff = "SD0001",
                     Type = "Admin",
-                    Gender = "Male",
+                    Gender = "Female",
                     Location = "HN",
                     JoinedDate = DateTime.Now,
-                    DateOfBirth = DateTime.ParseExact("2001-02-02", "yyyy-MM-dd", null)
+                    DateOfBirth = DateTime.ParseExact("2000-02-02", "yyyy-MM-dd", null)
                 };
                 var result = userMgr.CreateAsync(user1, "P@33word1").Result;
                 if (!result.Succeeded)
