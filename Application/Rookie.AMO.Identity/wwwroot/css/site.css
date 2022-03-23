@@ -1,0 +1,210 @@
+﻿input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}
+
+.body-container {
+    margin-top: 60px;
+    padding-bottom: 40px;
+}
+
+.welcome-page li {
+    list-style: none;
+    padding: 4px;
+}
+
+.logged-out-page iframe {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.grants-page .card {
+    margin-top: 20px;
+    border-bottom: 1px solid lightgray;
+}
+
+    .grants-page .card .card-title {
+        font-size: 120%;
+        font-weight: bold;
+    }
+
+        .grants-page .card .card-title img {
+            width: 100px;
+            height: 100px;
+        }
+
+    .grants-page .card label {
+        font-weight: bold;
+    }
+
+.mediaViewInfo {
+    --web-view-name: OAM Login;
+    --web-view-id: OAM_Login;
+    --web-scale-to-fit: true;
+    --web-scale-to-fit-type: width;
+    --web-scale-on-resize: true;
+    --web-navigate-on-keypress: true;
+    --web-enable-deep-linking: true;
+    --web-page-font: Arial;
+}
+
+:root {
+    --web-view-ids: OAM_Login;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border: none;
+}
+
+#OAM_Login {
+    top: 0px;
+    position: absolute;
+    width: 1920px;
+    height: 1080px;
+    font-family: Arial;
+    background-color: rgba(255,255,255,1);
+    overflow: hidden;
+    --web-view-name: OAM Login;
+    --web-view-id: OAM_Login;
+    --web-scale-to-fit: true;
+    --web-scale-to-fit-type: width;
+    --web-scale-on-resize: true;
+    --web-navigate-on-keypress: true;
+    --web-enable-deep-linking: true;
+    --web-page-font: Arial;
+}
+
+.nav-container {
+    height: 72px;
+    background-color: rgba(207,35,56,1) !important;
+}
+
+#Online_Asset_Management_mjw {
+    left: 88px;
+    top: 12px;
+    position: absolute;
+    overflow: visible;
+    width: 298px;
+    white-space: nowrap;
+    line-height: 67px;
+    margin-top: -21.5px;
+    text-align: left;
+    font-family: Segoe UI, Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 24px;
+    color: rgba(250,250,250,1);
+}
+
+#Logo_mjx {
+    position: absolute;
+    width: 55px;
+    height: 56px;
+    left: 0px;
+    top: 0px;
+    overflow: visible;
+}
+
+#Logo_mjv {
+    position: absolute;
+    width: 385px;
+    height: 56px;
+    left: 138px;
+    top: 10px;
+    overflow: visible;
+}
+
+.user-authenticated {
+    position: absolute;
+    right: 50px;
+    overflow: visible;
+}
+
+.header_mjz {
+    border:1px solid black;
+    border-radius:5px;
+    background-color: rgba(239,241,245,1);
+    overflow: visible;
+    width: 465.648px;
+    height: 64px;
+}
+
+.background_mj {
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: rgba(250,252,252,1);
+    overflow: visible;
+    width: 465.648px;
+    height: 228.959px;
+    transform: matrix(1,0,0,1,0,0);
+    padding-top: 40px;
+}
+
+#Login_btn {
+    width: 71px;
+    height: 37px;
+    overflow: visible;
+    --web-animation: fadein 0.3s ease-out;
+    --web-action-type: page;
+    --web-action-target: Home.html;
+    cursor: pointer;
+    background-color: rgba(227,12,24,1);
+    color: white;
+    border-radius: 5px;
+    float: right;
+}
+
+#Welcome_to_Online_Asset_Manage {
+    line-height:60px;
+    text-align: center;
+    font-family: Segoe UI, Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    color: rgba(207,35,56,1);
+}
+
+#defaul-user {
+    left: 0px;
+    bottom: -70px;
+    position: absolute;
+    overflow: visible;
+    width: 367px;
+    white-space: nowrap;
+    line-height: 67px;
+    margin-top: -23.5px;
+    text-align: left;
+    font-family: Segoe UI, Arial;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 15px;
+}
+.input-login {
+    border: 1px solid grey;
+    float:right;
+}
+.input-field {
+    margin: 10px;
+    padding-left: 60px;
+    padding-right: 60px;
+}
+.form-login{
+    padding-left:auto;
+    padding-right: auto;
+}
+.login{
+    justify-content:center;
+}
+.note {
+    color: rgba(233,66,77,1);
+}
+.show-password {
+    position:absolute;
+    left:370px;
+    bottom:122px;
+    cursor:pointer;
+}

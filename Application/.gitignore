@@ -1,0 +1,10 @@
+**/bin
+**/obj
+**/node_modules
+**/.vs
+**/.vscode
+**/*.*proj.user
+**/*.log
+**/*.pubxml
+**/*.user
+**/tempkey.jwk
