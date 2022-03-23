@@ -44,9 +44,9 @@ namespace Rookie.AMO.Identity
         }
 
         // identity-related resources (scopes)
-        public static IEnumerable<IdentityResource> GetIdentityResources()
-        {
-            return new List<IdentityResource>
+        public static IEnumerable<IdentityResource> IdentityResources =>
+
+             new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
                 new IdentityResource(
@@ -55,7 +55,7 @@ namespace Rookie.AMO.Identity
                     displayName: "Your profile data"
                 ),
             };
-        }
+
         public static IEnumerable<ApiResource> ApiResources =>
         new ApiResource[]
         {
@@ -68,9 +68,9 @@ namespace Rookie.AMO.Identity
             new ApiScope("roles", new List<string>() { "role" })
         };
 
-        public static IEnumerable<Client> GetClients()
-        {
-            return new List<Client>()
+        public static IEnumerable<Client> Clients =>
+
+             new List<Client>()
             {
                 new Client
                 {
@@ -152,13 +152,11 @@ namespace Rookie.AMO.Identity
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RedirectUris = new List<string>()
                     {
-                        "http://localhost:3000/callback",
-                        "https://b3g1amo.z23.web.core.windows.net/callback"
+                        "http://localhost:3000/callback"
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        "http://localhost:3000/",
-                        "https://b3g1amo.z23.web.core.windows.net/"
+                        "http://localhost:3000/"
                     },
                     AllowedScopes =
                     {
@@ -178,6 +176,6 @@ namespace Rookie.AMO.Identity
                     AllowAccessTokensViaBrowser = true
                 }
             };
-        }
+
     }
 }
