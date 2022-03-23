@@ -1,3 +1,4 @@
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -9,6 +10,7 @@ using Rookie.AMO.Identity.DataAccessor;
 using Rookie.AMO.Identity.DataAccessor.Data;
 using Rookie.AMO.Identity.DataAccessor.Entities;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Rookie.AMO.Identity
@@ -26,12 +28,15 @@ namespace Rookie.AMO.Identity
         }
         public void ConfigureServices(IServiceCollection services)
         {
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+
             services.AddDbContext<AppIdentityDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
             });
 
-            services.AddIdentity<User, IdentityRole>(options => {
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireDigit = false;
@@ -58,13 +63,31 @@ namespace Rookie.AMO.Identity
 
             if (CurrentEnvironment.IsDevelopment())
             {
-                services.AddIdentityServer()
+                /*services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
                 .AddInMemoryIdentityResources(InitData.GetIdentityResources())
                 .AddInMemoryClients(InitData.GetClients())
                 .AddInMemoryApiScopes(InitData.ApiScopes)
                 .AddInMemoryApiResources(InitData.ApiResources)
-                .AddAspNetIdentity<User>();
+                .AddAspNetIdentity<User>();*/
+                services.AddIdentityServer(options =>
+                   {
+                       options.Events.RaiseErrorEvents = true;
+                       options.Events.RaiseInformationEvents = true;
+                       options.Events.RaiseFailureEvents = true;
+                       options.Events.RaiseSuccessEvents = true;
+                   })
+               .AddAspNetIdentity<User>()
+               .AddConfigurationStore(options =>
+               {
+                   options.ConfigureDbContext = b =>
+                   b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
+               })
+               .AddOperationalStore(options =>
+               {
+                   options.ConfigureDbContext = b =>
+                   b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
+               });
             }
             else
             {
@@ -74,13 +97,13 @@ namespace Rookie.AMO.Identity
                 services.AddIdentityServer()
                 .AddSigningCredential(rsaCertificate)
                 //.AddDeveloperSigningCredential()
-                .AddInMemoryIdentityResources(InitData.GetIdentityResources())
-                .AddInMemoryClients(InitData.GetClients())
+                .AddInMemoryIdentityResources(InitData.IdentityResources)
+                .AddInMemoryClients(InitData.Clients)
                 .AddInMemoryApiScopes(InitData.ApiScopes)
                 .AddInMemoryApiResources(InitData.ApiResources)
                 .AddAspNetIdentity<User>();
             }
-            
+
             //seed data
             SeedIdentityData.EnsureSeedData(Configuration.GetConnectionString("DefaultConnection"));
         }
@@ -105,7 +128,8 @@ namespace Rookie.AMO.Identity
                 endpoints.MapDefaultControllerRoute();
             });
 
-            if (env.IsDevelopment()) {
+            if (env.IsDevelopment())
+            {
                 //seed database
                 var serviceScopeFactory = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
                 using (var serviceScope = serviceScopeFactory.CreateScope())
@@ -115,6 +139,18 @@ namespace Rookie.AMO.Identity
                     {
                         dbContext.Database.Migrate();
                     }
+                    var configDbContext = serviceScope.ServiceProvider.GetService<ConfigurationDbContext>();
+                    if (!configDbContext.Database.CanConnect())
+                    {
+                        configDbContext.Database.Migrate();
+                    }
+
+                    var persistedGrantDbContext = serviceScope.ServiceProvider.GetService<PersistedGrantDbContext>();
+                    if (!persistedGrantDbContext.Database.CanConnect())
+                    {
+                        persistedGrantDbContext.Database.Migrate();
+                    }
+
                 }
             }
 
