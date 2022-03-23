@@ -155,6 +155,46 @@ namespace Rookie.AMO.Identity.DataAccessor
                     throw new Exception(result.Errors.First().Description);
                 }
             }
+
+             var user3 = userMgr.FindByNameAsync("Staff2").Result;
+            if (user2 == null)
+            {
+                user2 = new User
+                {
+                    FirstName = "Steve",
+                    LastName = "Doe",
+                    FullName = "Steve Doe",
+                    UserName = "Staff2",
+                    CodeStaff = "SD0003",
+                    Type = "Staff",
+                    Gender = "FeMale",
+                    JoinedDate = DateTime.Now,
+                    DateOfBirth = DateTime.ParseExact("2001-01-01", "yyyy-MM-dd", null)
+                };
+                var result = userMgr.CreateAsync(user3, "password@123").Result;
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.First().Description);
+                }
+
+                result = userMgr.AddClaimsAsync(user3, new List<Claim>
+                    {
+                        new Claim(IdentityModel.JwtClaimTypes.GivenName, "Steve"),
+                        new Claim(IdentityModel.JwtClaimTypes.FamilyName, "Doe"),
+                        new Claim(IdentityModel.JwtClaimTypes.Role, "Staff"),
+                        new Claim("location", "HN")
+                    }).Result;
+
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.First().Description);
+                }
+                result = userMgr.AddToRoleAsync(user3, "Staff").Result;
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.First().Description);
+                }
+            }
         }
     }
 }
