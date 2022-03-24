@@ -168,10 +168,10 @@ namespace Rookie.AMO.Identity.DataAccessor
                 }
             }
 
-             var user3 = userMgr.FindByNameAsync("Staff2").Result;
-            if (user2 == null)
+            var user3 = userMgr.FindByNameAsync("Staff2").Result;
+            if (user3 == null)
             {
-                user2 = new User
+                user3 = new User
                 {
                     FirstName = "Steve",
                     LastName = "Doe",
