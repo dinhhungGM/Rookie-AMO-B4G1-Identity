@@ -63,13 +63,7 @@ namespace Rookie.AMO.Identity
 
             if (CurrentEnvironment.IsDevelopment())
             {
-                /*services.AddIdentityServer()
-                .AddDeveloperSigningCredential()
-                .AddInMemoryIdentityResources(InitData.GetIdentityResources())
-                .AddInMemoryClients(InitData.GetClients())
-                .AddInMemoryApiScopes(InitData.ApiScopes)
-                .AddInMemoryApiResources(InitData.ApiResources)
-                .AddAspNetIdentity<User>();*/
+
                 services.AddIdentityServer(options =>
                    {
                        options.Events.RaiseErrorEvents = true;
@@ -87,7 +81,8 @@ namespace Rookie.AMO.Identity
                {
                    options.ConfigureDbContext = b =>
                    b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
-               });
+               })
+               .AddDeveloperSigningCredential();
             }
             else
             {
@@ -96,7 +91,6 @@ namespace Rookie.AMO.Identity
 
                 services.AddIdentityServer()
                 .AddSigningCredential(rsaCertificate)
-                //.AddDeveloperSigningCredential()
                 .AddInMemoryIdentityResources(InitData.IdentityResources)
                 .AddInMemoryClients(InitData.Clients)
                 .AddInMemoryApiScopes(InitData.ApiScopes)
