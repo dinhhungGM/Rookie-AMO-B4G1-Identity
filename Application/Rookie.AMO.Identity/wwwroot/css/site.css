@@ -208,3 +208,10 @@ input::-ms-clear {
     bottom:122px;
     cursor:pointer;
 }
+.show-password-alt {
+    right: 13%;
+    top: 50%;
+    transform: translateY(-50%);
+    position: absolute;
+    cursor: pointer;
+}
