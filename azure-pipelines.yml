@@ -5,6 +5,7 @@
 
 trigger:
 - main
+- develop
  
 variables:
   # Build Configuration
@@ -14,7 +15,7 @@ variables:
   buildProjects: "**/*.csproj"
   
 pool:
-  name: rookies-b3g1
+  name: rookies-2022
 
 steps:
 - task: DotNetCoreCLI@2

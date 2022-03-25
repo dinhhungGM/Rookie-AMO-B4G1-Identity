@@ -92,3 +92,19 @@ document.querySelector('#togglePassword').addEventListener('click', function (e)
 	// toggle the eye / eye slash icon
 	this.classList.toggle('bi-eye');
 });
+document.querySelector('#toggleNewPassword').addEventListener('click', function (e) {
+	const password = document.querySelector('#newPassword');
+	// toggle the type attribute
+	const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+	password.setAttribute('type', type);
+	// toggle the eye / eye slash icon
+	this.classList.toggle('bi-eye');
+});
+document.querySelector('#toggleConfirmPassword').addEventListener('click', function (e) {
+	const password = document.querySelector('#confirmPassword');
+	// toggle the type attribute
+	const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+	password.setAttribute('type', type);
+	// toggle the eye / eye slash icon
+	this.classList.toggle('bi-eye');
+});
