@@ -13,7 +13,7 @@
         },
         "sku": {
             "type": "string",
-            "defaultValue": "Standard S1"
+            "defaultValue": "F1 Free"
         },
         "databaseServerName": {
             "type": "string"
