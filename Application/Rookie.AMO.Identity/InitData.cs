@@ -79,11 +79,13 @@ namespace Rookie.AMO.Identity
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RedirectUris = new List<string>()
                     {
-                        "https://localhost:5001/callback"
+                        "https://localhost:5001/callback",
+                        "https://b4g1-web.azurewebsites.net/callback"
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        "https://localhost:5001/"
+                        "https://localhost:5001/",
+                        "https://b4g1-web.azurewebsites.net/"
                     },
                     AllowedScopes =
                     {
@@ -112,8 +114,15 @@ namespace Rookie.AMO.Identity
                     RequirePkce = true,
                     RequireClientSecret = false,
 
-                    RedirectUris = {"https://localhost:5011/swagger/oauth2-redirect.html"},
-                    AllowedCorsOrigins = {"https://localhost:5011"},
+                    RedirectUris = new List<string>()
+                    {
+                        "https://localhost:5011/swagger/oauth2-redirect.html",
+                        "https://b4g1-api.azurewebsites.net/swagger/oauth2-redirect.html"
+                    },
+                    AllowedCorsOrigins = new List<string>(){
+                        "https://localhost:5011",
+                        "https://b4g1-api.azurewebsites.net"
+                    },
                     AllowedScopes = {"roles" }
                 },
                 new Client
@@ -123,11 +132,13 @@ namespace Rookie.AMO.Identity
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RedirectUris = new List<string>()
                     {
-                        "https://localhost:5011/callback"
+                        "https://localhost:5011/callback",
+                        "https://b4g1-api.azurewebsites.net/callback"
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        "https://localhost:5011/"
+                        "https://localhost:5011/",
+                        "https://b4g1-api.azurewebsites.net/"
                     },
                     AllowedScopes =
                     {
@@ -152,11 +163,13 @@ namespace Rookie.AMO.Identity
                     AllowedGrantTypes = GrantTypes.Implicit,
                     RedirectUris = new List<string>()
                     {
-                        "http://localhost:3000/callback"
+                        "http://localhost:3000/callback",
+                        "https://b4g1-web.azurewebsites.net/callback"
                     },
                     PostLogoutRedirectUris = new List<string>()
                     {
-                        "http://localhost:3000/"
+                        "http://localhost:3000/",
+                        "https://b4g1-web.azurewebsites.net/"
                     },
                     AllowedScopes =
                     {

@@ -35,16 +35,7 @@ namespace Rookie.AMO.Identity
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
             });
 
-            services.AddIdentity<User, IdentityRole>(options =>
-            {
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 0;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequiredUniqueChars = 0;
-            })
+            services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<AppIdentityDbContext>()
             .AddDefaultTokenProviders();
 
@@ -91,10 +82,16 @@ namespace Rookie.AMO.Identity
 
                 services.AddIdentityServer()
                 .AddSigningCredential(rsaCertificate)
-                .AddInMemoryIdentityResources(InitData.IdentityResources)
-                .AddInMemoryClients(InitData.Clients)
-                .AddInMemoryApiScopes(InitData.ApiScopes)
-                .AddInMemoryApiResources(InitData.ApiResources)
+                .AddConfigurationStore(options =>
+                {
+                    options.ConfigureDbContext = b =>
+                    b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
+                })
+               .AddOperationalStore(options =>
+               {
+                   options.ConfigureDbContext = b =>
+                   b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
+               })
                 .AddAspNetIdentity<User>();
             }
 
