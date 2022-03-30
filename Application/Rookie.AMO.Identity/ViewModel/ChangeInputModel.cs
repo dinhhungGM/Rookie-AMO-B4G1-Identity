@@ -16,10 +16,12 @@ namespace Rookie.AMO.Identity.ViewModel
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
+        [MaxLength(20)]
         public string NewPass { get; set; }
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm new password")]
+        [MaxLength(20)]
         [Compare("NewPass", ErrorMessage = "Password does not match, please retry.")]
         public string ConfirmPass { get; set; }
 

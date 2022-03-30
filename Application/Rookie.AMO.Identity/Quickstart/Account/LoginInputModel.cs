@@ -14,6 +14,8 @@ namespace IdentityServerHost.Quickstart.UI
         [StringLength(50)]
         public string Username { get; set; }
         [Required(ErrorMessage = "Password is required")]
+        [DataType(DataType.Password)]
+        [MaxLength(20)]
         public string Password { get; set; }
         public bool RememberLogin { get; set; }
         public string ReturnUrl { get; set; }
