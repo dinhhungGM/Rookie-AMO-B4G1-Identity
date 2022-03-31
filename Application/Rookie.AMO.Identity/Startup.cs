@@ -1,4 +1,5 @@
 using FluentValidation.AspNetCore;
+using IdentityServer4.AspNetIdentity;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -90,32 +91,18 @@ namespace Rookie.AMO.Identity
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-            if (CurrentEnvironment.IsDevelopment())
+
+            services.AddAuthentication(options =>
             {
-                services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = "Bearer";
-                    options.DefaultChallengeScheme = "oidc";
-                })
-                .AddIdentityServerAuthentication("Bearer", options =>
-                {
-                    options.ApiName = "api1";
-                    options.Authority = "https://localhost:5001";
-                });
-            }
-            else
+                options.DefaultScheme = "Bearer";
+                options.DefaultChallengeScheme = "oidc";
+            })
+            .AddIdentityServerAuthentication("Bearer", options =>
             {
-                services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = "Bearer";
-                    options.DefaultChallengeScheme = "oidc";
-                })
-                .AddIdentityServerAuthentication("Bearer", options =>
-                {
-                    options.ApiName = "api1";
-                    options.Authority = "https://b4g1-id4.azurewebsites.net";
-                });
-            }
+                options.ApiName = "api1";
+                options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+            });
+
 
             services.AddAuthorization(options =>
             {
@@ -176,9 +163,6 @@ namespace Rookie.AMO.Identity
                     });
             });
 
-
-
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
             if (CurrentEnvironment.IsDevelopment())
             {
 
@@ -200,6 +184,7 @@ namespace Rookie.AMO.Identity
                    options.ConfigureDbContext = b =>
                    b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
                })
+               .AddResourceOwnerValidator<ResourceOwnerPasswordValidator<User>>()
                .AddDeveloperSigningCredential();
             }
             else
@@ -209,7 +194,8 @@ namespace Rookie.AMO.Identity
 
 
                 services.AddIdentityServer()
-                .AddSigningCredential(rsaCertificate)
+                /*.AddSigningCredential(rsaCertificate)*/
+                .AddDeveloperSigningCredential()
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = b =>
@@ -220,6 +206,7 @@ namespace Rookie.AMO.Identity
                    options.ConfigureDbContext = b =>
                    b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
                })
+               .AddResourceOwnerValidator<ResourceOwnerPasswordValidator<User>>()
                 .AddAspNetIdentity<User>();
             }
 
