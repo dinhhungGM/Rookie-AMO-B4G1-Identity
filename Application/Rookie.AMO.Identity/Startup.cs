@@ -1,6 +1,5 @@
 using FluentValidation.AspNetCore;
 using IdentityServer4.EntityFramework.DbContexts;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -90,13 +89,17 @@ namespace Rookie.AMO.Identity
             services.AddTransient<IEmailSender, EmailSenderService>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-           .AddIdentityServerAuthentication(options =>
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Bearer";
+                options.DefaultChallengeScheme = "oidc";
+            })
+           .AddIdentityServerAuthentication("Bearer", options =>
            {
+               options.ApiName = "api1";
                options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
            });
-
 
             services.AddAuthorization(options =>
             {
@@ -162,6 +165,7 @@ namespace Rookie.AMO.Identity
 
                 services.AddIdentityServer(options =>
                    {
+                       options.IssuerUri = Configuration.GetSection("IdentityServerOptions:Authority").Value;
                        options.Events.RaiseErrorEvents = true;
                        options.Events.RaiseInformationEvents = true;
                        options.Events.RaiseFailureEvents = true;
@@ -190,7 +194,7 @@ namespace Rookie.AMO.Identity
                 {
                     options.IssuerUri = Configuration.GetSection("IdentityServerOptions:Authority").Value;
                 })
-                .AddSigningCredential(rsaCertificate)
+                /*.AddSigningCredential(rsaCertificate)*/
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = b =>
@@ -215,8 +219,8 @@ namespace Rookie.AMO.Identity
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseHsts();
-            app.UseHttpsRedirection();
+            /*app.UseHsts();
+            app.UseHttpsRedirection();*/
             app.UseStaticFiles();
             app.UseRouting();
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Rookie.AMO.Identity.Business;
 using Rookie.AMO.Identity.Bussiness.Interfaces;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace Rookie.AMO.Identity.Quickstart.Api
 {
+    [EnableCors("AllowOrigins")]
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
