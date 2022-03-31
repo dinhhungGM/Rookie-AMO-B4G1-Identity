@@ -1,6 +1,6 @@
 using FluentValidation.AspNetCore;
-using IdentityServer4.AspNetIdentity;
 using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -90,18 +90,12 @@ namespace Rookie.AMO.Identity
             services.AddTransient<IEmailSender, EmailSenderService>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = "Bearer";
-                options.DefaultChallengeScheme = "oidc";
-            })
-            .AddIdentityServerAuthentication("Bearer", options =>
-            {
-                options.ApiName = "api1";
-                options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
-            });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+           .AddIdentityServerAuthentication(options =>
+           {
+               options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+           });
 
 
             services.AddAuthorization(options =>
@@ -184,7 +178,6 @@ namespace Rookie.AMO.Identity
                    options.ConfigureDbContext = b =>
                    b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
                })
-               .AddResourceOwnerValidator<ResourceOwnerPasswordValidator<User>>()
                .AddDeveloperSigningCredential();
             }
             else
@@ -193,9 +186,11 @@ namespace Rookie.AMO.Identity
                 Path.Combine(CurrentEnvironment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
 
 
-                services.AddIdentityServer()
-                /*.AddSigningCredential(rsaCertificate)*/
-                .AddDeveloperSigningCredential()
+                services.AddIdentityServer(options =>
+                {
+                    options.IssuerUri = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+                })
+                .AddSigningCredential(rsaCertificate)
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = b =>
@@ -206,7 +201,6 @@ namespace Rookie.AMO.Identity
                    options.ConfigureDbContext = b =>
                    b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
                })
-               .AddResourceOwnerValidator<ResourceOwnerPasswordValidator<User>>()
                 .AddAspNetIdentity<User>();
             }
 
@@ -221,10 +215,12 @@ namespace Rookie.AMO.Identity
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseCors("AllowOrigins");
+            app.UseHsts();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
 
+            app.UseCors("AllowOrigins");
             app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
