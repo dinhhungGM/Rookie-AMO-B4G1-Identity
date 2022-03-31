@@ -95,10 +95,21 @@ namespace Rookie.AMO.Identity
                 options.DefaultScheme = "Bearer";
                 options.DefaultChallengeScheme = "oidc";
             })
-           .AddIdentityServerAuthentication("Bearer", options =>
+           /*.AddIdentityServerAuthentication("Bearer", options =>
            {
                options.ApiName = "api1";
                options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+           });*/
+           .AddJwtBearer(options =>
+           {
+               // base-address of your identityserver
+               options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+
+               // if you are using API resources, you can specify the name here
+               options.Audience = "api1";
+
+               // IdentityServer emits a typ header by default, recommended extra check
+               options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
            });
 
             services.AddAuthorization(options =>

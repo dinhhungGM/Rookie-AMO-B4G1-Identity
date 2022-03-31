@@ -16,7 +16,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
     [EnableCors("AllowOrigins")]
     [Route("api/[controller]")]
     [ApiController]
-    // [Authorize]
+    [Authorize]
     public class UsersController : ControllerBase
     {
 
@@ -27,7 +27,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
             _userService = userService;
         }
         // GET: api/<UsersController>
-        [Authorize(Policy = "ADMIN_ROLE_POLICY")]
+        /*[Authorize(Policy = "ADMIN_ROLE_POLICY")]*/
         [HttpGet]
         public async Task<IEnumerable<UserDto>> GetListUser()
         {
@@ -78,8 +78,9 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         public async Task<PagedResponseModel<UserDto>> PagedQueryAsync
         (string name, int page, int limit = 5)
         {
-/*            var adminLocation = User.Claims.FirstOrDefault(x => x.Type == "location").Value;
-*/            return await _userService.PagedQueryAsync(name, page, limit);
+            /*            var adminLocation = User.Claims.FirstOrDefault(x => x.Type == "location").Value;
+            */
+            return await _userService.PagedQueryAsync(name, page, limit);
         }
     }
 }
