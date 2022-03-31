@@ -190,7 +190,7 @@ namespace Rookie.AMO.Identity
                 {
                     options.IssuerUri = Configuration.GetSection("IdentityServerOptions:Authority").Value;
                 })
-                .AddSigningCredential(rsaCertificate)
+                // .AddSigningCredential(rsaCertificate)
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = b =>
