@@ -16,7 +16,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
     [EnableCors("AllowOrigins")]
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    // [Authorize]
     public class UsersController : ControllerBase
     {
 
@@ -27,6 +27,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
             _userService = userService;
         }
         // GET: api/<UsersController>
+        [Authorize(Policy = "ADMIN_ROLE_POLICY")]
         [HttpGet]
         public async Task<IEnumerable<UserDto>> GetListUser()
         {
