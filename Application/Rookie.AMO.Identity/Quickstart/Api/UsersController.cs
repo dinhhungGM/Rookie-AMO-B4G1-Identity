@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Rookie.AMO.Identity.Business;
 using Rookie.AMO.Identity.Bussiness.Interfaces;
+using Rookie.AMO.Identity.Filters;
 using Rookie.AMO.Identity.ViewModel.UserModels;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
     [EnableCors("AllowOrigins")]
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [CustomAuthorize]
     public class UsersController : ControllerBase
     {
 

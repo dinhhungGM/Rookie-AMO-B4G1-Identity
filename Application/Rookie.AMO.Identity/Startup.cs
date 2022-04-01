@@ -94,7 +94,7 @@ namespace Rookie.AMO.Identity
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-            /*if (CurrentEnvironment.IsDevelopment())
+            if (CurrentEnvironment.IsDevelopment())
             {
                 services.AddAuthentication(options =>
                 {
@@ -120,26 +120,7 @@ namespace Rookie.AMO.Identity
                     options.Authority = "https://b4g1-id4.azurewebsites.net";
 
                 });
-            }*/
-
-            services.AddAuthentication("Bearer")
-            .AddJwtBearer("Bearer", options =>
-            {
-                if (CurrentEnvironment.IsDevelopment())
-                {
-                    options.Authority = "https://localhost:5001";
-                }
-                else
-                {
-                    options.Authority = "https://b4g1-id4.azurewebsites.net";
-                }
-
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = false,
-                    ValidateIssuer = false
-                };
-            });
+            }
 
             services.AddAuthorization(options =>
             {
