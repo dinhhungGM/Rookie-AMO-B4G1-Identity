@@ -130,25 +130,37 @@ namespace Rookie.AMO.Identity.Bussiness.Services
             }
 
             var theSameUsernameLoginList = _userManager.Users
-                .Where(x => x.UserName.StartsWith(userNameLogin.ToString()))
-                .OrderByDescending(x => Convert.ToInt32(x.UserName.Replace(userNameLogin.ToString(), "")));
+                .Where(x => x.UserName.StartsWith(userNameLogin.ToString())
+                );
 
             if (!theSameUsernameLoginList.Any())
             {
                 return userNameLogin.ToString();
             }
 
-            if (theSameUsernameLoginList.Count() == 1)
+
+
+            foreach (var user in theSameUsernameLoginList)
             {
-                return userNameLogin.Append(1).ToString();
+                if (user.UserName == userNameLogin.ToString())
+                {
+                    continue;
+                }
+
+                // Neu ma la binhnv1
+                bool res = int.TryParse(user.UserName.Split(userNameLogin.ToString()).Last(), out int _);
+                if (!res)
+                {
+                    theSameUsernameLoginList = theSameUsernameLoginList.Where(x => x.UserName != user.UserName);
+                }
             }
 
-            var lastUsername = theSameUsernameLoginList.First().UserName;
-            // lastUsername = usernamelogin + ordernumber ~ binhnv1 = binhnv + 1
-            var orderNumber = Convert.ToInt32(lastUsername.Replace(userNameLogin.ToString(), ""));
-            orderNumber++;
-            userNameLogin.Append(orderNumber);
 
+
+            // lastUsername = usernamelogin + ordernumber ~ binhnv1 = binhnv + 1
+
+
+            userNameLogin.Append((theSameUsernameLoginList.Count()).ToString());
             return userNameLogin.ToString();
         }
         public async Task DisableUserById(Guid id)
@@ -165,9 +177,9 @@ namespace Rookie.AMO.Identity.Bussiness.Services
 
         public async Task<PagedResponseModel<UserDto>> PagedQueryAsync(string? name, int page, int limit)
         {
-            var query =  _userManager.Users;
+            var query = _userManager.Users;
 
-            query=query.Where(m=>string.IsNullOrEmpty(name)||m.UserName == name);
+            query = query.Where(m => string.IsNullOrEmpty(name) || m.UserName == name);
             query = query.OrderByDescending(x => x.UserName);
 
             var assets = await query

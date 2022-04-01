@@ -1,9 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Principal;
 
 namespace Rookie.AMO.Identity.Filters
 {
@@ -12,6 +18,8 @@ namespace Rookie.AMO.Identity.Filters
     {
 
         public string Role { get; set; }
+
+
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             string authHeader = context.HttpContext.Request.Headers["Authorization"];
@@ -34,11 +42,31 @@ namespace Rookie.AMO.Identity.Filters
                     return;
 
                 var handler = new JwtSecurityTokenHandler();
-                var jwtSecurityToken = handler.ReadJwtToken(accessToken);
-                var hasClaim = context.HttpContext.User.Claims.Any(c => c.Type == "role" && c.Value == Role);
-                if (!hasClaim)
+                try
                 {
-                    context.Result = new ForbidResult();
+                    // validate token here
+
+                    var jwtSecurityToken = handler.ReadJwtToken(accessToken);
+
+                    var hasClaim = jwtSecurityToken.Claims.Any(c => c.Type == "role" && c.Value == Role);
+                    if (!hasClaim)
+                    {
+                        context.Result = new ForbidResult();
+                    }
+
+                    var user = new ClaimsPrincipal();
+
+                    ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+                    claimsIdentity.AddClaim(new Claim("sub", jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "sub").Value));
+                    /*claimsIdentity.AddClaim(new Claim("sub", jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "location").Value));*/
+                    user.AddIdentity(claimsIdentity);
+                    context.HttpContext.User = user;
+
+                }
+                catch (Exception)
+                {
+                    context.Result = new UnauthorizedResult();
+
                 }
 
             }

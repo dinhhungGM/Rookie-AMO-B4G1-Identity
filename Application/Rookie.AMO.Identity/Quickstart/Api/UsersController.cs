@@ -29,7 +29,6 @@ namespace Rookie.AMO.Identity.Quickstart.Api
             _userService = userService;
         }
         // GET: api/<UsersController>
-        [Authorize(Policy = "ADMIN_ROLE_POLICY")]
         [CustomAuthorize(Role = "Admin")]
         [HttpGet]
         public async Task<IEnumerable<UserDto>> GetListUser()
@@ -50,6 +49,8 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         public async Task<ActionResult<UserDto>> CreateUserAsync(UserRegistrationDto newUser)
         {
             var admin = await _userService.GetUserById(User.Claims.FirstOrDefault(x => x.Type == "sub").Value);
+            if (admin == null)
+                return BadRequest();
             var userDto = await _userService.CreateUserAsync(newUser, admin.Location);
             return Created("/api/users", userDto);
         }
