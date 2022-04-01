@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 
 namespace Rookie.AMO.Identity.Filters
@@ -21,7 +23,7 @@ namespace Rookie.AMO.Identity.Filters
             {
                 if (!authHeader.StartsWith("Bearer"))
                     context.Result = new UnauthorizedResult();
-                var token = authHeader.Split(" ").Last();
+                var accessToken = authHeader.Split(" ").Last();
 
                 if (context.HttpContext.User == null)
                 {
@@ -30,6 +32,9 @@ namespace Rookie.AMO.Identity.Filters
 
                 if (Role == null)
                     return;
+
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(accessToken);
                 var hasClaim = context.HttpContext.User.Claims.Any(c => c.Type == "role" && c.Value == Role);
                 if (!hasClaim)
                 {

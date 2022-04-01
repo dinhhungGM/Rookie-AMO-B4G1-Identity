@@ -1,5 +1,4 @@
 using FluentValidation.AspNetCore;
-using IdentityServer4.Configuration;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -57,8 +56,7 @@ namespace Rookie.AMO.Identity
                 options.AddPolicy("AllowOrigins",
                     builder =>
                     {
-                        builder
-                        .AllowAnyOrigin()
+                        builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                     });
@@ -117,10 +115,10 @@ namespace Rookie.AMO.Identity
                 .AddIdentityServerAuthentication("Bearer", options =>
                 {
                     options.ApiName = "api1";
-                    options.Authority = "https://b4g1-id4.azurewebsites.net";
-
+                    options.Authority = "https://b4g1-amo-id4.azurewebsites.net";
                 });
             }
+
 
             services.AddAuthorization(options =>
             {
@@ -186,8 +184,6 @@ namespace Rookie.AMO.Identity
 
                 services.AddIdentityServer(options =>
                    {
-
-                       options.IssuerUri = Configuration.GetSection("IdentityServerOptions:Authority").Value;
                        options.Events.RaiseErrorEvents = true;
                        options.Events.RaiseInformationEvents = true;
                        options.Events.RaiseFailureEvents = true;
@@ -244,6 +240,7 @@ namespace Rookie.AMO.Identity
             app.UseRouting();
 
             app.UseCors("AllowOrigins");
+
             app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
