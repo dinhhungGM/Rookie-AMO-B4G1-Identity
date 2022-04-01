@@ -103,7 +103,15 @@ namespace Rookie.AMO.Identity
            .AddJwtBearer(options =>
            {
                // base-address of your identityserver
-               options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+               if (CurrentEnvironment.IsDevelopment())
+               {
+                   options.Authority = "https://localhost:5001";
+               }
+               else
+               {
+                   options.Authority = "https://b4g1-id4.azurewebsites.net";
+               }
+               /*options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;*/
 
                // if you are using API resources, you can specify the name here
                options.Audience = "api1";
@@ -176,7 +184,6 @@ namespace Rookie.AMO.Identity
 
                 services.AddIdentityServer(options =>
                    {
-                       options.IssuerUri = Configuration.GetSection("IdentityServerOptions:Authority").Value;
                        options.Events.RaiseErrorEvents = true;
                        options.Events.RaiseInformationEvents = true;
                        options.Events.RaiseFailureEvents = true;
@@ -201,10 +208,7 @@ namespace Rookie.AMO.Identity
                 Path.Combine(CurrentEnvironment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
 
 
-                services.AddIdentityServer(options =>
-                {
-                    options.IssuerUri = Configuration.GetSection("IdentityServerOptions:Authority").Value;
-                })
+                services.AddIdentityServer()
                 /*.AddSigningCredential(rsaCertificate)*/
                 .AddConfigurationStore(options =>
                 {
