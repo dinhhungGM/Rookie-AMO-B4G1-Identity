@@ -1,4 +1,5 @@
 using FluentValidation.AspNetCore;
+using IdentityServer4.Configuration;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Rookie.AMO.Identity.Bussiness.Interfaces;
 using Rookie.AMO.Identity.Bussiness.Services;
@@ -56,10 +58,9 @@ namespace Rookie.AMO.Identity
                     builder =>
                     {
                         builder
-                        .SetIsOriginAllowed(hostName => true)
+                        .AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
+                        .AllowAnyHeader();
                     });
             });
 
@@ -93,18 +94,45 @@ namespace Rookie.AMO.Identity
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-            services.AddAuthentication(options =>
+            /*if (CurrentEnvironment.IsDevelopment())
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-           .AddJwtBearer(options =>
-           {
-               options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
-               options.Audience = Configuration.GetSection("IdentityServerOptions:Audience").Value;
-               options.RequireHttpsMetadata = false;
+                services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "Bearer";
+                    options.DefaultChallengeScheme = "oidc";
+                })
+                .AddIdentityServerAuthentication("Bearer", options =>
+                {
+                    options.ApiName = "api1";
+                    options.Authority = "https://localhost:5001";
+                });
+            }
+            else
+            {
+                services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = "Bearer";
+                    options.DefaultChallengeScheme = "oidc";
+                })
+                .AddIdentityServerAuthentication("Bearer", options =>
+                {
+                    options.ApiName = "api1";
+                    options.Authority = "https://b4g1-id4.azurewebsites.net";
 
-           });
+                });
+            }*/
+
+            services.AddAuthentication("Bearer")
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false,
+                    ValidateIssuer = false
+                };
+            });
 
             services.AddAuthorization(options =>
             {
@@ -170,6 +198,8 @@ namespace Rookie.AMO.Identity
 
                 services.AddIdentityServer(options =>
                    {
+
+                       options.IssuerUri = Configuration.GetSection("IdentityServerOptions:Authority").Value;
                        options.Events.RaiseErrorEvents = true;
                        options.Events.RaiseInformationEvents = true;
                        options.Events.RaiseFailureEvents = true;
@@ -193,8 +223,10 @@ namespace Rookie.AMO.Identity
                 var rsaCertificate = new X509Certificate2(
                 Path.Combine(CurrentEnvironment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
 
-
-                services.AddIdentityServer()
+                services.AddIdentityServer(options =>
+                {
+                    options.IssuerUri = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+                })
                 .AddSigningCredential(rsaCertificate)
                 .AddConfigurationStore(options =>
                 {
