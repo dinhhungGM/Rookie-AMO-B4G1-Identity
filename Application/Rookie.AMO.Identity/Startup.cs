@@ -55,7 +55,8 @@ namespace Rookie.AMO.Identity
                 options.AddPolicy("AllowOrigins",
                     builder =>
                     {
-                        builder.AllowAnyOrigin()
+                        builder
+                        .SetIsOriginAllowed(hostName => true)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials();
