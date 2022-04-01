@@ -1,5 +1,7 @@
 using FluentValidation.AspNetCore;
+using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -20,9 +22,12 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
+using System.Security.Authentication;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-
+using System.Threading.Tasks;
 
 namespace Rookie.AMO.Identity
 {
@@ -32,6 +37,15 @@ namespace Rookie.AMO.Identity
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment CurrentEnvironment { get; }
+
+        private static HttpClientHandler GetHandler()
+        {
+            var handler = new HttpClientHandler();
+            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+            handler.SslProtocols = SslProtocols.Tls12;
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+            return handler;
+        }
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -92,33 +106,30 @@ namespace Rookie.AMO.Identity
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = "Bearer";
-                options.DefaultChallengeScheme = "oidc";
+                options.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
             })
-           /*.AddIdentityServerAuthentication("Bearer", options =>
+           .AddIdentityServerAuthentication("Bearer", options =>
            {
-               options.ApiName = "api1";
+               options.ApiName = Configuration.GetSection("IdentityServerOptions:Audience").Value;
                options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
-           });*/
-           .AddJwtBearer(options =>
+               options.JwtBackChannelHandler = GetHandler();
+               options.RequireHttpsMetadata = true;
+           })
+           /*.AddJwtBearer(options =>
            {
                // base-address of your identityserver
-               if (CurrentEnvironment.IsDevelopment())
-               {
-                   options.Authority = "https://localhost:5001";
-               }
-               else
-               {
-                   options.Authority = "https://b4g1-id4.azurewebsites.net";
-               }
-               /*options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;*/
+
+               options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+
+               options.Audience = Configuration.GetSection("IdentityServerOptions:Audience").Value;
 
                // if you are using API resources, you can specify the name here
-               options.Audience = "api1";
 
                // IdentityServer emits a typ header by default, recommended extra check
                options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
-           });
+
+           })*/;
 
             services.AddAuthorization(options =>
             {
@@ -209,7 +220,7 @@ namespace Rookie.AMO.Identity
 
 
                 services.AddIdentityServer()
-                /*.AddSigningCredential(rsaCertificate)*/
+                .AddSigningCredential(rsaCertificate)
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = b =>
