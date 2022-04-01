@@ -1,5 +1,4 @@
 using FluentValidation.AspNetCore;
-using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -22,12 +21,8 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
-using System.Security.Authentication;
-using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
 namespace Rookie.AMO.Identity
 {
@@ -38,14 +33,6 @@ namespace Rookie.AMO.Identity
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment CurrentEnvironment { get; }
 
-        private static HttpClientHandler GetHandler()
-        {
-            var handler = new HttpClientHandler();
-            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-            handler.SslProtocols = SslProtocols.Tls12;
-            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
-            return handler;
-        }
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -70,7 +57,8 @@ namespace Rookie.AMO.Identity
                     {
                         builder.AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                     });
             });
 
@@ -106,30 +94,16 @@ namespace Rookie.AMO.Identity
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-           .AddIdentityServerAuthentication("Bearer", options =>
+           .AddJwtBearer(options =>
            {
-               options.ApiName = Configuration.GetSection("IdentityServerOptions:Audience").Value;
                options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
-               options.JwtBackChannelHandler = GetHandler();
-               options.RequireHttpsMetadata = true;
-           })
-           /*.AddJwtBearer(options =>
-           {
-               // base-address of your identityserver
-
-               options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
-
                options.Audience = Configuration.GetSection("IdentityServerOptions:Audience").Value;
+               options.RequireHttpsMetadata = false;
 
-               // if you are using API resources, you can specify the name here
-
-               // IdentityServer emits a typ header by default, recommended extra check
-               options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
-
-           })*/;
+           });
 
             services.AddAuthorization(options =>
             {
@@ -245,8 +219,6 @@ namespace Rookie.AMO.Identity
             {
                 app.UseDeveloperExceptionPage();
             }
-            /*app.UseHsts();
-            app.UseHttpsRedirection();*/
             app.UseStaticFiles();
             app.UseRouting();
 
