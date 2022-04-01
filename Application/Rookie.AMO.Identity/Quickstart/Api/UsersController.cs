@@ -8,6 +8,7 @@ using Rookie.AMO.Identity.ViewModel.UserModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -29,6 +30,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         }
         // GET: api/<UsersController>
         /*[Authorize(Policy = "ADMIN_ROLE_POLICY")]*/
+        [CustomAuthorize(Role = "Admin")]
         [HttpGet]
         public async Task<IEnumerable<UserDto>> GetListUser()
         {
@@ -43,7 +45,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         }
 
         // POST api/<UsersController>
-        [Authorize(Policy = "ADMIN_ROLE_POLICY")]
+        [CustomAuthorize(Role = "Admin")]
         [HttpPost]
         public async Task<ActionResult<UserDto>> CreateUserAsync(UserRegistrationDto newUser)
         {
