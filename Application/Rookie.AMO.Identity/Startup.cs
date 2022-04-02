@@ -159,7 +159,15 @@ namespace Rookie.AMO.Identity
             })
             .AddJwtBearer("Bearer", options =>
             {
-                options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+                if (CurrentEnvironment.IsDevelopment())
+                {
+                    options.Authority = "https://localhost:5001";
+                }
+                else
+                {
+                    options.Authority = "https://b4g1-amo-id4.azurewebsites.net";
+                }
+                options.Audience = "api1";
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateAudience = false
