@@ -2,6 +2,7 @@ using FluentValidation.AspNetCore;
 using IdentityServer4;
 using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -248,7 +249,8 @@ namespace Rookie.AMO.Identity
                options.ConfigureDbContext = b =>
                b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
            }).AddSigningCredential(securityKey, IdentityServerConstants.ECDsaSigningAlgorithm.ES256)
-           .AddValidationKey(securityKey);
+           .AddValidationKey(securityKey)
+           .AddProfileService<ProfileService>();
 
 
 

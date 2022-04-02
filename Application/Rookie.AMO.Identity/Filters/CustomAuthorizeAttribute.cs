@@ -77,7 +77,7 @@ namespace Rookie.AMO.Identity.Filters
 
                     ClaimsIdentity claimsIdentity = new ClaimsIdentity();
                     claimsIdentity.AddClaim(new Claim("sub", jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "sub").Value));
-                    /*claimsIdentity.AddClaim(new Claim("sub", jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "location").Value));*/
+                    claimsIdentity.AddClaim(new Claim("location", jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "location").Value));
                     user.AddIdentity(claimsIdentity);
                     context.HttpContext.User = user;
 

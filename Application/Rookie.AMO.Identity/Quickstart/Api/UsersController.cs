@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Rookie.AMO.Identity.Business;
 using Rookie.AMO.Identity.Bussiness.Interfaces;
@@ -8,7 +7,6 @@ using Rookie.AMO.Identity.ViewModel.UserModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -45,14 +43,11 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         }
 
         // POST api/<UsersController>
-        /*[CustomAuthorize(Role = "Admin")]*/
+        [CustomAuthorize(Role = "Admin")]
         [HttpPost]
         public async Task<ActionResult<UserDto>> CreateUserAsync(UserRegistrationDto newUser)
         {
-            var admin = await _userService.GetUserById(User.Claims.FirstOrDefault(x => x.Type == "sub").Value);
-            if (admin == null)
-                return BadRequest();
-            var userDto = await _userService.CreateUserAsync(newUser, admin.Location);
+            var userDto = await _userService.CreateUserAsync(newUser, User.Claims.FirstOrDefault(x => x.Type == "location").Value);
             return Created("/api/users", userDto);
         }
 
@@ -82,10 +77,11 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         [CustomAuthorize(Role = "Admin")]
         [HttpGet("find")]
         public async Task<PagedResponseModel<UserDto>> PagedQueryAsync
-        (string name, int page,string type, int limit)
+        (string name, int page, string type, int limit)
         {
-/*            var adminLocation = User.Claims.FirstOrDefault(x => x.Type == "location").Value;
-*/            return await _userService.PagedQueryAsync(name, page, type, limit);
+            /*            var adminLocation = User.Claims.FirstOrDefault(x => x.Type == "location").Value;
+            */
+            return await _userService.PagedQueryAsync(name, page, type, limit);
         }
     }
 }
