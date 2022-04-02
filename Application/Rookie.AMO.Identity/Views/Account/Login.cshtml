@@ -17,11 +17,11 @@
                 <div class="background_mj" viewBox="0 0 465.648 228.959">
                     <div class="input-field">
                         <span>Username </span><span class="note">*</span>
-                        <input class="input-login" id="username" asp-for="Username" autofocus>
+                        <input class="input-login" id="username" asp-for="Username" maxlength=50 autofocus>
                     </div>
                     <div class="input-field">
                         <span>Password </span><span class="note">*</span>
-                        <input id="password" class="input-login" type="password" asp-for="Password" autocomplete="off">
+                        <input id="password" class="input-login" type="password" asp-for="Password" maxlength=20 minLength=8 autocomplete="off">
                         <i id="togglePassword" class="fas fa-eye show-password"></i>
                     </div>
                     <div class="input-field">

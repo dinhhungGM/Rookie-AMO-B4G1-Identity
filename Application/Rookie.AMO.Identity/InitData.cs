@@ -54,6 +54,10 @@ namespace Rookie.AMO.Identity
                     userClaims: new[] { "name", "website", "role" },
                     displayName: "Your profile data"
                 ),
+                new IdentityResource(
+                    name: "locations",
+                    userClaims: new[] { "location" }
+                ),
             };
 
         public static IEnumerable<ApiResource> ApiResources =>
@@ -65,7 +69,8 @@ namespace Rookie.AMO.Identity
         public static IEnumerable<ApiScope> ApiScopes =>
         new ApiScope[]
         {
-            new ApiScope("roles", new List<string>() { "role" })
+            new ApiScope("roles", new List<string>() { "role" }),
+
         };
 
         public static IEnumerable<Client> Clients =>
@@ -175,7 +180,7 @@ namespace Rookie.AMO.Identity
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "roles"
+                        "roles","locations"
                     },
                     ClientSecrets =
                     {

@@ -76,8 +76,17 @@ namespace Rookie.AMO.Identity
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
             });
 
-            services.AddIdentity<User, IdentityRole>()
-            .AddEntityFrameworkStores<AppIdentityDbContext>()
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequiredUniqueChars = 1;
+            })
+             .AddEntityFrameworkStores<AppIdentityDbContext>()
             .AddDefaultTokenProviders();
             services.AddCors(options =>
             {
