@@ -1,4 +1,5 @@
 using FluentValidation.AspNetCore;
+using IdentityServer4;
 using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.Validation;
@@ -210,9 +211,14 @@ namespace Rookie.AMO.Identity
                     });
             });
 
+            var pemBytes = Convert.FromBase64String(
+                 @"MHcCAQEEIB2EbKgBGbRxWTtWheDgaNw3P7TsSsMoWloU4NHO3MWYoAoGCCqGSM49
+            AwEHoUQDQgAEVGVVEnzMZnTv/8Jk0/WlFs9poYA7XqI7ITHH78OPenhGS02GBjXM
+            WV/akdaWBgIyUP8/86kJ2KRyuHR4c/jIuA==");
 
-
-
+            var ecdsa = ECDsa.Create();
+            ecdsa.ImportECPrivateKey(pemBytes, out _);
+            var securityKey = new ECDsaSecurityKey(ecdsa) { KeyId = "ef208a01ef43406f833b267023766550" };
 
             services.AddIdentityServer(options =>
                {
@@ -231,8 +237,9 @@ namespace Rookie.AMO.Identity
            {
                options.ConfigureDbContext = b =>
                b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
-           })
-           .AddSigningCredential(GetRandomCertificate());
+           }).AddSigningCredential(securityKey, IdentityServerConstants.ECDsaSigningAlgorithm.ES256);
+            ;
+
 
 
 
