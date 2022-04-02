@@ -119,7 +119,7 @@ namespace Rookie.AMO.Identity
             services.AddTransient<IEmailSender, EmailSenderService>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
-            /*JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
             if (CurrentEnvironment.IsDevelopment())
             {
                 services.AddAuthentication(options =>
@@ -150,29 +150,8 @@ namespace Rookie.AMO.Identity
                     options.SupportedTokens = SupportedTokens.Jwt;
 
                 });
-            }*/
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = "Bearer";
-                options.DefaultChallengeScheme = "Bearer";
-                options.DefaultForbidScheme = "Bearer";
-            })
-            .AddJwtBearer("Bearer", options =>
-            {
-                if (CurrentEnvironment.IsDevelopment())
-                {
-                    options.Authority = "https://localhost:5001";
-                }
-                else
-                {
-                    options.Authority = "https://b4g1-amo-id4.azurewebsites.net";
-                }
-                options.Audience = "api1";
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = false
-                };
-            });
+            }
+
 
             services.AddAuthorization(options =>
             {
