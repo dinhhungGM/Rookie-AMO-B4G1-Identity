@@ -125,7 +125,7 @@ namespace Rookie.AMO.Identity
                 services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = "Bearer";
-                    options.DefaultChallengeScheme = "oidc";
+                    options.DefaultChallengeScheme = "Bearer";
                     options.DefaultForbidScheme = "Bearer";
                 })
                 .AddIdentityServerAuthentication("Bearer", options =>
@@ -133,6 +133,7 @@ namespace Rookie.AMO.Identity
                     options.ApiName = "api1";
                     options.Authority = "https://localhost:5001";
                     options.SupportedTokens = SupportedTokens.Jwt;
+                    
                 });
             }
             else
@@ -140,7 +141,7 @@ namespace Rookie.AMO.Identity
                 services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = "Bearer";
-                    options.DefaultChallengeScheme = "oidc";
+                    options.DefaultChallengeScheme = "Bearer";
                     options.DefaultForbidScheme = "Bearer";
                 })
                 .AddIdentityServerAuthentication("Bearer", options =>
@@ -148,6 +149,7 @@ namespace Rookie.AMO.Identity
                     options.ApiName = "api1";
                     options.Authority = "https://b4g1-amo-id4.azurewebsites.net";
                     options.SupportedTokens = SupportedTokens.Jwt;
+                    
                 });
             }
 
@@ -237,8 +239,9 @@ namespace Rookie.AMO.Identity
            {
                options.ConfigureDbContext = b =>
                b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
-           }).AddSigningCredential(securityKey, IdentityServerConstants.ECDsaSigningAlgorithm.ES256);
-            ;
+           }).AddSigningCredential(securityKey, IdentityServerConstants.ECDsaSigningAlgorithm.ES256)
+           .AddValidationKey(securityKey);
+            
 
 
 
