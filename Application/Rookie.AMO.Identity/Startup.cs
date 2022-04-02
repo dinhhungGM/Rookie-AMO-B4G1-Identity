@@ -151,11 +151,15 @@ namespace Rookie.AMO.Identity
 
                 });
             }*/
-            services.AddAuthentication("Bearer")
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Bearer";
+                options.DefaultChallengeScheme = "Bearer";
+                options.DefaultForbidScheme = "Bearer";
+            })
             .AddJwtBearer("Bearer", options =>
             {
                 options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
-
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateAudience = false
