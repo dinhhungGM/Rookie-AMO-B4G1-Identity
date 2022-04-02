@@ -21,11 +21,15 @@ using Rookie.AMO.Identity.DataAccessor;
 using Rookie.AMO.Identity.DataAccessor.Data;
 using Rookie.AMO.Identity.DataAccessor.Entities;
 using Rookie.AMO.Identity.Validators;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Rookie.AMO.Identity
@@ -41,6 +45,26 @@ namespace Rookie.AMO.Identity
         {
             Configuration = configuration;
             CurrentEnvironment = env;
+        }
+
+        static X509Certificate2 GetRandomCertificate()
+        {
+            X509Store st = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+            st.Open(OpenFlags.ReadOnly);
+            try
+            {
+                var certCollection = st.Certificates;
+
+                if (certCollection.Count == 0)
+                {
+                    return null;
+                }
+                return certCollection[0];
+            }
+            finally
+            {
+                st.Close();
+            }
         }
         public void ConfigureServices(IServiceCollection services)
         {
@@ -187,11 +211,8 @@ namespace Rookie.AMO.Identity
             });
 
 
-            var rsaCertificate = new X509Certificate2(
-            Path.Combine(CurrentEnvironment.ContentRootPath, "myapp.pfx"), "123", 
-                              X509KeyStorageFlags.MachineKeySet
-                             | X509KeyStorageFlags.PersistKeySet
-                             | X509KeyStorageFlags.Exportable);
+
+
 
             services.AddIdentityServer(options =>
                {
@@ -211,7 +232,7 @@ namespace Rookie.AMO.Identity
                options.ConfigureDbContext = b =>
                b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
            })
-           .AddSigningCredential(rsaCertificate);
+           .AddSigningCredential(GetRandomCertificate());
 
 
 
