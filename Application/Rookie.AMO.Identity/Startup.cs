@@ -1,5 +1,7 @@
 using FluentValidation.AspNetCore;
+using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,6 +20,7 @@ using Rookie.AMO.Identity.Bussiness.Services;
 using Rookie.AMO.Identity.DataAccessor;
 using Rookie.AMO.Identity.DataAccessor.Data;
 using Rookie.AMO.Identity.DataAccessor.Entities;
+using Rookie.AMO.Identity.Validators;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
@@ -98,11 +101,13 @@ namespace Rookie.AMO.Identity
                 {
                     options.DefaultScheme = "Bearer";
                     options.DefaultChallengeScheme = "oidc";
+                    options.DefaultForbidScheme = "Bearer";
                 })
                 .AddIdentityServerAuthentication("Bearer", options =>
                 {
                     options.ApiName = "api1";
                     options.Authority = "https://localhost:5001";
+                    options.SupportedTokens = SupportedTokens.Jwt;
                 });
             }
             else
@@ -111,11 +116,13 @@ namespace Rookie.AMO.Identity
                 {
                     options.DefaultScheme = "Bearer";
                     options.DefaultChallengeScheme = "oidc";
+                    options.DefaultForbidScheme = "Bearer";
                 })
                 .AddIdentityServerAuthentication("Bearer", options =>
                 {
                     options.ApiName = "api1";
                     options.Authority = "https://b4g1-amo-id4.azurewebsites.net";
+                    options.SupportedTokens = SupportedTokens.Jwt;
                 });
             }
 
@@ -179,51 +186,31 @@ namespace Rookie.AMO.Identity
                     });
             });
 
-            if (CurrentEnvironment.IsDevelopment())
-            {
 
-                services.AddIdentityServer(options =>
-                   {
-                       options.Events.RaiseErrorEvents = true;
-                       options.Events.RaiseInformationEvents = true;
-                       options.Events.RaiseFailureEvents = true;
-                       options.Events.RaiseSuccessEvents = true;
-                   })
-               .AddAspNetIdentity<User>()
-               .AddConfigurationStore(options =>
-               {
-                   options.ConfigureDbContext = b =>
-                   b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
-               })
-               .AddOperationalStore(options =>
-               {
-                   options.ConfigureDbContext = b =>
-                   b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
-               })
-               .AddDeveloperSigningCredential();
-            }
-            else
-            {
-                var rsaCertificate = new X509Certificate2(
-                Path.Combine(CurrentEnvironment.ContentRootPath, "idsrv3test.pfx"), "idsrv3test");
+            var rsaCertificate = new X509Certificate2(
+            Path.Combine(CurrentEnvironment.ContentRootPath, "myapp.pfx"), "123");
 
-                services.AddIdentityServer(options =>
-                {
-                    options.IssuerUri = Configuration.GetSection("IdentityServerOptions:Authority").Value;
-                })
-                .AddSigningCredential(rsaCertificate)
-                .AddConfigurationStore(options =>
-                {
-                    options.ConfigureDbContext = b =>
-                    b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
-                })
-               .AddOperationalStore(options =>
+            services.AddIdentityServer(options =>
                {
-                   options.ConfigureDbContext = b =>
-                   b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
+                   options.Events.RaiseErrorEvents = true;
+                   options.Events.RaiseInformationEvents = true;
+                   options.Events.RaiseFailureEvents = true;
+                   options.Events.RaiseSuccessEvents = true;
                })
-                .AddAspNetIdentity<User>();
-            }
+           .AddAspNetIdentity<User>()
+           .AddConfigurationStore(options =>
+           {
+               options.ConfigureDbContext = b =>
+               b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
+           })
+           .AddOperationalStore(options =>
+           {
+               options.ConfigureDbContext = b =>
+               b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
+           })
+           .AddSigningCredential(rsaCertificate);
+
+
 
             //seed data
             SeedIdentityData.EnsureSeedData(Configuration.GetConnectionString("DefaultConnection"));

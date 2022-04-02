@@ -18,7 +18,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
     [EnableCors("AllowOrigins")]
     [Route("api/[controller]")]
     [ApiController]
-    [CustomAuthorize]
+    [Authorize]
     public class UsersController : ControllerBase
     {
 
@@ -29,7 +29,8 @@ namespace Rookie.AMO.Identity.Quickstart.Api
             _userService = userService;
         }
         // GET: api/<UsersController>
-        [CustomAuthorize(Role = "Admin")]
+        /*[CustomAuthorize(Role = "Admin")]*/
+        [Authorize(Policy = "ADMIN_ROLE_POLICY")]
         [HttpGet]
         public async Task<IEnumerable<UserDto>> GetListUser()
         {
@@ -44,7 +45,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         }
 
         // POST api/<UsersController>
-        [CustomAuthorize(Role = "Admin")]
+        /*[CustomAuthorize(Role = "Admin")]*/
         [HttpPost]
         public async Task<ActionResult<UserDto>> CreateUserAsync(UserRegistrationDto newUser)
         {
