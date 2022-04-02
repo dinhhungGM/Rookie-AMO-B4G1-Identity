@@ -31,7 +31,6 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         }
         // GET: api/<UsersController>
         [CustomAuthorize(Role = "Admin")]
-        /*[Authorize(Policy = "ADMIN_ROLE_POLICY")]*/
         [HttpGet]
         public async Task<IEnumerable<UserDto>> GetListUser()
         {
@@ -46,7 +45,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         }
 
         // POST api/<UsersController>
-        /*[CustomAuthorize(Role = "Admin")]*/
+        [CustomAuthorize(Role = "Admin")]
         [HttpPost]
         public async Task<ActionResult<UserDto>> CreateUserAsync(UserRegistrationDto newUser)
         {
@@ -64,6 +63,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         }
 
         // DELETE api/<UsersController>/5
+        [CustomAuthorize(Role = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {
@@ -80,6 +80,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
 
         }
 
+        [CustomAuthorize(Role = "Admin")]
         [HttpGet("find")]
         public async Task<PagedResponseModel<UserDto>> PagedQueryAsync
         (string name, int page, int limit = 5)
