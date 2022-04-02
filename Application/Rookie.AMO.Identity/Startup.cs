@@ -188,7 +188,7 @@ namespace Rookie.AMO.Identity
 
 
             var rsaCertificate = new X509Certificate2(
-            Path.Combine(CurrentEnvironment.ContentRootPath, "myapp.pfx"), "123");
+            Path.Combine(CurrentEnvironment.ContentRootPath, "myapp.pfx"), "123", X509KeyStorageFlags.EphemeralKeySet);
 
             services.AddIdentityServer(options =>
                {
