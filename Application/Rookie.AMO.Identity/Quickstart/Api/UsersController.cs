@@ -79,14 +79,13 @@ namespace Rookie.AMO.Identity.Quickstart.Api
             return Ok();
 
         }
-
+        [Authorize(Policy = "ADMIN_ROLE_POLICY")]
         [HttpGet("find")]
         public async Task<PagedResponseModel<UserDto>> PagedQueryAsync
-        (string name, int page, int limit = 5)
+        (string name, int page,string type, int limit)
         {
-            /*            var adminLocation = User.Claims.FirstOrDefault(x => x.Type == "location").Value;
-            */
-            return await _userService.PagedQueryAsync(name, page, limit);
+/*            var adminLocation = User.Claims.FirstOrDefault(x => x.Type == "location").Value;
+*/            return await _userService.PagedQueryAsync(name, page, type, limit);
         }
     }
 }

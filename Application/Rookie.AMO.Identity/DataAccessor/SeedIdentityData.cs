@@ -143,7 +143,7 @@ namespace Rookie.AMO.Identity.DataAccessor
                     JoinedDate = DateTime.Now,
                     DateOfBirth = DateTime.ParseExact("2001-01-01", "yyyy-MM-dd", null)
                 };
-                var result = userMgr.CreateAsync(user2, "P@33word1").Result;
+                var result = userMgr.CreateAsync(user2, "Password@123").Result;
                 if (!result.Succeeded)
                 {
                     throw new Exception(result.Errors.First().Description);
@@ -183,7 +183,7 @@ namespace Rookie.AMO.Identity.DataAccessor
                     JoinedDate = DateTime.Now,
                     DateOfBirth = DateTime.ParseExact("2001-01-01", "yyyy-MM-dd", null)
                 };
-                var result = userMgr.CreateAsync(user3, "P@33word1").Result;
+                var result = userMgr.CreateAsync(user3, "Password@123").Result;
                 if (!result.Succeeded)
                 {
                     throw new Exception(result.Errors.First().Description);

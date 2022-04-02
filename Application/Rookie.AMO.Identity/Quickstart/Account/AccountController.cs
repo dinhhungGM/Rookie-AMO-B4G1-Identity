@@ -20,6 +20,7 @@ using Rookie.AMO.Identity.DataAccessor.Entities;
 using Rookie.AMO.Identity.ViewModel;
 using Rookie.AMO.Identity.DataAccessor.Data;
 using Microsoft.EntityFrameworkCore;
+using IdentityServer4;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -119,7 +120,25 @@ namespace IdentityServerHost.Quickstart.UI
                     {
                         var user = await _userManager.FindByNameAsync(model.Username);
                         await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName, clientId: context?.Client.ClientId));
+                        AuthenticationProperties props = null;
 
+                        if (AccountOptions.AllowRememberLogin && model.RememberLogin)
+                        {
+                            props = new AuthenticationProperties
+                            {
+                                IsPersistent = true,
+                                ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
+                            };
+                        };
+                        var userClaim = await _userManager.GetClaimsAsync(user);
+                        // issue authentication cookie with subject ID and username
+                        var isuser = new IdentityServerUser(user.Id)
+                        {
+                            DisplayName = user.Id,
+                            AdditionalClaims = userClaim
+                        };
+
+                        await HttpContext.SignInAsync(isuser, props);
                         if (context != null)
                         {
                             if (context.IsNativeClient())

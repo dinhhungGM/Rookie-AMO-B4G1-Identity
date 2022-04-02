@@ -175,12 +175,25 @@ namespace Rookie.AMO.Identity.Bussiness.Services
             await _userManager.UpdateAsync(user);
         }
 
-        public async Task<PagedResponseModel<UserDto>> PagedQueryAsync(string? name, int page, int limit)
+        public async Task<PagedResponseModel<UserDto>> PagedQueryAsync(string? name, int page, string? type, int limit=5)
         {
-            var query = _userManager.Users;
-
-            query = query.Where(m => string.IsNullOrEmpty(name) || m.UserName == name);
-            query = query.OrderByDescending(x => x.UserName);
+            var query =  _userManager.Users;
+            query = query.Where(x => String.IsNullOrEmpty(type)
+                          || type.ToLower().Contains(x.Type.ToLower()))
+                        .Where(x => (String.IsNullOrEmpty(name))
+                         || x.FullName.ToLower().Contains(name.ToLower())
+                         || x.CodeStaff.Contains(name.ToLower()))
+                                .Where(x => x.Disable == false);
+            /*if (!string.IsNullOrEmpty(state))
+            {
+                
+                foreach (var includeProperty in state.Split
+                (new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Where(m => m.Type == includeProperty);
+                }
+            }*/
+            query = query.OrderBy(x => x.CodeStaff);
 
             var assets = await query
                 .AsNoTracking()
