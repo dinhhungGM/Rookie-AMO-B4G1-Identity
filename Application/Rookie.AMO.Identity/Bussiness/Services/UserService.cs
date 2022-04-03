@@ -130,6 +130,7 @@ namespace Rookie.AMO.Identity.Bussiness.Services
                 userNameLogin.Append(word[0]);
             }
 
+
             var theSameUsernameLoginList = _userManager.Users
                 .Where(x => x.UserName.StartsWith(userNameLogin.ToString())
                 );
