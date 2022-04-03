@@ -139,28 +139,31 @@ namespace Rookie.AMO.Identity.Bussiness.Services
             }
 
 
+            List<string> loginListWithUserHaveTheSameUserName = new List<string>();
 
             foreach (var user in theSameUsernameLoginList)
             {
                 if (user.UserName == userNameLogin.ToString())
                 {
+                    loginListWithUserHaveTheSameUserName.Add(user.UserName);
                     continue;
                 }
 
-                // Neu ma la binhnv1
+                /*
+                 Try to split username of user
+                 vd: user.UserName = binhnv1, userNameLogin = binhnv
+                 =>  res = true, _ = 1
+                  user.UserName = binhnv1, userNameLogin = binhn
+                 => res = false, cannot convert v1 to int
+                 */
                 bool res = int.TryParse(user.UserName.Split(userNameLogin.ToString()).Last(), out int _);
-                if (!res)
+                if (res)
                 {
-                    theSameUsernameLoginList = theSameUsernameLoginList.Where(x => x.UserName != user.UserName);
+                    loginListWithUserHaveTheSameUserName.Add(user.UserName);
                 }
             }
 
-
-
-            // lastUsername = usernamelogin + ordernumber ~ binhnv1 = binhnv + 1
-
-
-            userNameLogin.Append((theSameUsernameLoginList.Count()).ToString());
+            userNameLogin.Append(loginListWithUserHaveTheSameUserName.Count().ToString());
             return userNameLogin.ToString();
         }
         public async Task DisableUserById(Guid id)
@@ -175,9 +178,9 @@ namespace Rookie.AMO.Identity.Bussiness.Services
             await _userManager.UpdateAsync(user);
         }
 
-        public async Task<PagedResponseModel<UserDto>> PagedQueryAsync(string? name, int page, string? type, int limit=5)
+        public async Task<PagedResponseModel<UserDto>> PagedQueryAsync(string? name, int page, string? type, int limit = 5)
         {
-            var query =  _userManager.Users;
+            var query = _userManager.Users;
             query = query.Where(x => String.IsNullOrEmpty(type)
                           || type.ToLower().Contains(x.Type.ToLower()))
                         .Where(x => (String.IsNullOrEmpty(name))

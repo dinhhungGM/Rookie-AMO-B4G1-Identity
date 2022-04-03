@@ -22,6 +22,7 @@ using Rookie.AMO.Identity.Bussiness.Services;
 using Rookie.AMO.Identity.DataAccessor;
 using Rookie.AMO.Identity.DataAccessor.Data;
 using Rookie.AMO.Identity.DataAccessor.Entities;
+using Rookie.AMO.Identity.Helpers;
 using Rookie.AMO.Identity.Validators;
 using System;
 using System.Collections.Generic;
@@ -222,15 +223,6 @@ namespace Rookie.AMO.Identity
                     });
             });
 
-            var pemBytes = Convert.FromBase64String(
-                 @"MHcCAQEEIB2EbKgBGbRxWTtWheDgaNw3P7TsSsMoWloU4NHO3MWYoAoGCCqGSM49
-            AwEHoUQDQgAEVGVVEnzMZnTv/8Jk0/WlFs9poYA7XqI7ITHH78OPenhGS02GBjXM
-            WV/akdaWBgIyUP8/86kJ2KRyuHR4c/jIuA==");
-
-            var ecdsa = ECDsa.Create();
-            ecdsa.ImportECPrivateKey(pemBytes, out _);
-            var securityKey = new ECDsaSecurityKey(ecdsa) { KeyId = "ef208a01ef43406f833b267023766550" };
-
             services.AddIdentityServer(options =>
                {
                    options.Events.RaiseErrorEvents = true;
@@ -248,8 +240,8 @@ namespace Rookie.AMO.Identity
            {
                options.ConfigureDbContext = b =>
                b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
-           }).AddSigningCredential(securityKey, IdentityServerConstants.ECDsaSigningAlgorithm.ES256)
-           .AddValidationKey(securityKey)
+           }).AddSigningCredential(ECDSAHelper.GetSecurityKey(), IdentityServerConstants.ECDsaSigningAlgorithm.ES256)
+           .AddValidationKey(ECDSAHelper.GetSecurityKey())
            .AddProfileService<ProfileService>();
 
 

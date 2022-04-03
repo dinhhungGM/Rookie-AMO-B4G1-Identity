@@ -111,8 +111,8 @@ namespace IdentityServerHost.Quickstart.UI
 
             if (ModelState.IsValid)
             {
-                var check = ( await _userManager.Users.ToListAsync()).FirstOrDefault(x=>x.UserName.Equals(model.Username,StringComparison.Ordinal));
-                if(check != null)
+                var check = (await _userManager.Users.ToListAsync()).FirstOrDefault(x => x.UserName.Equals(model.Username, StringComparison.Ordinal));
+                if (check != null)
                 {
 
                     var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
@@ -122,7 +122,7 @@ namespace IdentityServerHost.Quickstart.UI
                         await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName, clientId: context?.Client.ClientId));
                         AuthenticationProperties props = null;
 
-                        if (AccountOptions.AllowRememberLogin && model.RememberLogin)
+                        if (AccountOptions.AllowRememberLogin)
                         {
                             props = new AuthenticationProperties
                             {
@@ -167,7 +167,7 @@ namespace IdentityServerHost.Quickstart.UI
                             throw new Exception("invalid return URL");
                         }
                     }
-                }  
+                }
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
                 ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
