@@ -13,5 +13,6 @@ namespace Rookie.AMO.Identity.Bussiness.Interfaces
         Task<UserDto> CreateUserAsync(UserRegistrationDto request, string adminLocation);
         Task DisableUserById(Guid id);
         Task<PagedResponseModel<UserDto>> PagedQueryAsync(string? name, int page,string state, int limit=5);
+        Task UpdateUserAsync(Guid id, UserUpdateRequest request);
     }
 }

@@ -52,10 +52,14 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         }
 
         // PUT api/<UsersController>/5
+
+        [CustomAuthorize(Role = "Admin")]
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task Update(Guid id, [FromBody] UserUpdateRequest request)
         {
+            await _userService.UpdateUserAsync(id, request);
         }
+
 
         // DELETE api/<UsersController>/5
         [HttpDelete("{id}")]

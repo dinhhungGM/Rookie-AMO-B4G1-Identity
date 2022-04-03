@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PasswordGenerator;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using EnsureThat;
 
 namespace Rookie.AMO.Identity.Bussiness.Services
 {
@@ -149,21 +150,22 @@ namespace Rookie.AMO.Identity.Bussiness.Services
                     continue;
                 }
 
-                /*
-                 Try to split username of user
-                 vd: user.UserName = binhnv1, userNameLogin = binhnv
-                 =>  res = true, _ = 1
-                  user.UserName = binhnv1, userNameLogin = binhn
-                 => res = false, cannot convert v1 to int
-                 */
+                // Neu ma la binhnv1
                 bool res = int.TryParse(user.UserName.Split(userNameLogin.ToString()).Last(), out int _);
-                if (res)
+                if (!res)
                 {
                     loginListWithUserHaveTheSameUserName.Add(user.UserName);
                 }
             }
 
-            userNameLogin.Append(loginListWithUserHaveTheSameUserName.Count().ToString());
+            int loginListWithUserHaveTheSameUserNameLength = loginListWithUserHaveTheSameUserName.Count();
+
+            if (loginListWithUserHaveTheSameUserNameLength == 0)
+            {
+                return userNameLogin.ToString();
+            }
+
+            userNameLogin.Append(loginListWithUserHaveTheSameUserNameLength.ToString());
             return userNameLogin.ToString();
         }
         public async Task DisableUserById(Guid id)
@@ -175,6 +177,52 @@ namespace Rookie.AMO.Identity.Bussiness.Services
             }
 
             user.Disable = true;
+            await _userManager.UpdateAsync(user);
+        }
+        public async Task UpdateUserAsync(Guid id, UserUpdateRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            Ensure.Any.IsNotNull(user, nameof(user));
+
+            var claims = await _userManager.GetClaimsAsync(user);
+
+            if (user.Type != request.Type)
+            {
+                await _userManager.RemoveFromRoleAsync(user, user.Type);
+                await _userManager.AddToRoleAsync(user, request.Type);
+                var newClaim = new Claim(IdentityModel.JwtClaimTypes.Role, request.Type);
+                await _userManager.ReplaceClaimAsync(user, claims.First(x => x.Type == IdentityModel.JwtClaimTypes.Role), newClaim);
+                user.Type = request.Type;
+            }
+
+            bool fullNameChange = false;
+
+            if (user.FirstName != request.FirstName)
+            {
+                var newClaim = new Claim(IdentityModel.JwtClaimTypes.GivenName, request.FirstName);
+                await _userManager.ReplaceClaimAsync(user, claims.First(x => x.Type == IdentityModel.JwtClaimTypes.GivenName), newClaim);
+                user.FirstName = request.FirstName;
+                fullNameChange = true;
+            }
+
+            if (user.LastName != request.LastName)
+            {
+                var newClaim = new Claim(IdentityModel.JwtClaimTypes.FamilyName, request.LastName);
+                await _userManager.ReplaceClaimAsync(user, claims.First(x => x.Type == IdentityModel.JwtClaimTypes.FamilyName), newClaim);
+                user.LastName = request.LastName;
+                fullNameChange = true;
+            }
+
+            if (fullNameChange)
+            {
+                var requestFullName = $"{request.FirstName} {request.LastName}";
+                user.FullName = requestFullName;
+            }
+
+            user.Gender = request.Gender;
+            user.JoinedDate = request.JoinedDate;
+            user.DateOfBirth = request.DateOfBirth;
+
             await _userManager.UpdateAsync(user);
         }
 
