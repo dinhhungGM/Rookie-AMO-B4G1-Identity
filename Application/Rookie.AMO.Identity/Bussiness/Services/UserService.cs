@@ -153,7 +153,7 @@ namespace Rookie.AMO.Identity.Bussiness.Services
 
                 // Neu ma la binhnv1
                 bool res = int.TryParse(user.UserName.Split(userNameLogin.ToString()).Last(), out int _);
-                if (!res)
+                if (res)
                 {
                     loginListWithUserHaveTheSameUserName.Add(user.UserName);
                 }
