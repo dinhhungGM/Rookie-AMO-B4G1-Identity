@@ -227,7 +227,7 @@ namespace Rookie.AMO.Identity.Bussiness.Services
             await _userManager.UpdateAsync(user);
         }
 
-        public async Task<PagedResponseModel<UserDto>> PagedQueryAsync(string? name, int page, string? type, int limit = 5)
+        public async Task<PagedResponseModel<UserDto>> PagedQueryAsync(string? name, int page, string? type, string sort, bool desc, int limit = 5)
         {
             var query = _userManager.Users;
             query = query.Where(x => String.IsNullOrEmpty(type)
@@ -245,7 +245,71 @@ namespace Rookie.AMO.Identity.Bussiness.Services
                     query = query.Where(m => m.Type == includeProperty);
                 }
             }*/
-            query = query.OrderBy(x => x.CodeStaff);
+
+
+            switch (sort)
+            {
+                case "codeStaff":
+                    if (desc)
+                    {
+                        query = query.OrderByDescending(x => x.CodeStaff);
+
+                    }
+                    else
+                    {
+                        query = query.OrderBy(x => x.CodeStaff);
+
+                    }
+                    break;
+                case "userName":
+                    if (desc)
+                    {
+                        query = query.OrderByDescending(x => x.UserName);
+
+                    }
+                    else
+                    {
+                        query = query.OrderBy(x => x.UserName);
+
+                    }
+                    break;
+                case "joinedDate":
+                    if (desc)
+                    {
+                        query = query.OrderByDescending(x => x.JoinedDate);
+
+                    }
+                    else
+                    {
+                        query = query.OrderBy(x => x.JoinedDate);
+
+                    }
+                    break;
+                case "fullName":
+                    if (desc)
+                    {
+                        query = query.OrderByDescending(x => x.FullName);
+
+                    }
+                    else
+                    {
+                        query = query.OrderBy(x => x.FullName);
+
+                    }
+                    break;
+                case "type":
+                    if (desc)
+                    {
+                        query = query.OrderByDescending(x => x.Type);
+
+                    }
+                    else
+                    {
+                        query = query.OrderBy(x => x.CodeStaff);
+
+                    }
+                    break;
+            }
 
             var assets = await query
                 .AsNoTracking()

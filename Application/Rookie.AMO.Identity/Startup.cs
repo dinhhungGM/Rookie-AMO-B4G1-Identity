@@ -1,10 +1,6 @@
 using FluentValidation.AspNetCore;
 using IdentityServer4;
 using IdentityServer4.AccessTokenValidation;
-using IdentityServer4.EntityFramework.DbContexts;
-using IdentityServer4.Services;
-using IdentityServer4.Validation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Rookie.AMO.Identity.Bussiness.Interfaces;
 using Rookie.AMO.Identity.Bussiness.Services;
@@ -23,17 +18,10 @@ using Rookie.AMO.Identity.DataAccessor;
 using Rookie.AMO.Identity.DataAccessor.Data;
 using Rookie.AMO.Identity.DataAccessor.Entities;
 using Rookie.AMO.Identity.Helpers;
-using Rookie.AMO.Identity.Validators;
-using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Security.Cryptography.Pkcs;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Rookie.AMO.Identity
 {
@@ -50,34 +38,16 @@ namespace Rookie.AMO.Identity
             CurrentEnvironment = env;
         }
 
-        static X509Certificate2 GetRandomCertificate()
-        {
-            X509Store st = new X509Store(StoreName.My, StoreLocation.LocalMachine);
-            st.Open(OpenFlags.ReadOnly);
-            try
-            {
-                var certCollection = st.Certificates;
-
-                if (certCollection.Count == 0)
-                {
-                    return null;
-                }
-                return certCollection[0];
-            }
-            finally
-            {
-                st.Close();
-            }
-        }
         public void ConfigureServices(IServiceCollection services)
         {
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            string defaultDbConnection = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<AppIdentityDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
+                options.UseSqlServer(defaultDbConnection, b => b.MigrationsAssembly(migrationsAssembly));
             });
-
+            ConfigurationHelper.Initialize(Configuration);
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequireNonAlphanumeric = true;
@@ -131,7 +101,7 @@ namespace Rookie.AMO.Identity
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-            if (CurrentEnvironment.IsDevelopment())
+            /*if (CurrentEnvironment.IsDevelopment())
             {
                 services.AddAuthentication(options =>
                 {
@@ -161,7 +131,21 @@ namespace Rookie.AMO.Identity
                     options.SupportedTokens = SupportedTokens.Jwt;
 
                 });
-            }
+            }*/
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Bearer";
+                options.DefaultChallengeScheme = "Bearer";
+                options.DefaultForbidScheme = "Bearer";
+            })
+                .AddIdentityServerAuthentication("Bearer", options =>
+                {
+                    options.ApiName = Configuration.GetSection("IdentityServerOptions:Audience").Value;
+                    options.Authority = Configuration.GetSection("IdentityServerOptions:Authority").Value;
+                    options.SupportedTokens = SupportedTokens.Jwt;
+
+                });
 
 
             services.AddAuthorization(options =>
@@ -234,22 +218,18 @@ namespace Rookie.AMO.Identity
            .AddConfigurationStore(options =>
            {
                options.ConfigureDbContext = b =>
-               b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
+               b.UseSqlServer(defaultDbConnection, b => b.MigrationsAssembly(migrationsAssembly));
            })
            .AddOperationalStore(options =>
            {
                options.ConfigureDbContext = b =>
-               b.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(migrationsAssembly));
+               b.UseSqlServer(defaultDbConnection, b => b.MigrationsAssembly(migrationsAssembly));
            }).AddSigningCredential(ECDSAHelper.GetSecurityKey(), IdentityServerConstants.ECDsaSigningAlgorithm.ES256)
            .AddValidationKey(ECDSAHelper.GetSecurityKey())
            .AddProfileService<ProfileService>();
 
-
-
-
-
             //seed data
-            SeedIdentityData.EnsureSeedData(Configuration.GetConnectionString("DefaultConnection"));
+            SeedIdentityData.EnsureSeedData(defaultDbConnection);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -274,7 +254,7 @@ namespace Rookie.AMO.Identity
             });
             app.UseSwagger();
             app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "PlaceInfo Services"));
-            if (env.IsDevelopment())
+            /*if (env.IsDevelopment())
             {
                 //seed database
                 var serviceScopeFactory = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
@@ -298,7 +278,7 @@ namespace Rookie.AMO.Identity
                     }
 
                 }
-            }
+            }*/
 
         }
     }
