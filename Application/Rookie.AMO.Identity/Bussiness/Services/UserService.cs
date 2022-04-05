@@ -224,18 +224,20 @@ namespace Rookie.AMO.Identity.Bussiness.Services
             user.JoinedDate = request.JoinedDate;
             user.DateOfBirth = request.DateOfBirth;
 
+
             await _userManager.UpdateAsync(user);
         }
 
-        public async Task<PagedResponseModel<UserDto>> PagedQueryAsync(string? name, int page, string? type, string sort, bool desc, int limit = 5)
+        public async Task<PagedResponseModel<UserDto>> PagedQueryAsync(string? name, int page, string? type, string sort, bool desc, string id, int limit = 5)
         {
             var query = _userManager.Users;
-            query = query.Where(x => String.IsNullOrEmpty(type)
+            query = query.Where(x => x.Id == id);
+            var query1 = _userManager.Users.Where(x => String.IsNullOrEmpty(type)
                           || type.ToLower().Contains(x.Type.ToLower()))
                         .Where(x => (String.IsNullOrEmpty(name))
                          || x.FullName.ToLower().Contains(name.ToLower())
                          || x.CodeStaff.Contains(name.ToLower()))
-                                .Where(x => x.Disable == false);
+                                .Where(x => x.Disable == false).Where(x => x.Id != id);
             /*if (!string.IsNullOrEmpty(state))
             {
                 
@@ -245,7 +247,7 @@ namespace Rookie.AMO.Identity.Bussiness.Services
                     query = query.Where(m => m.Type == includeProperty);
                 }
             }*/
-
+            query = query.Concat(query1);
 
             switch (sort)
             {

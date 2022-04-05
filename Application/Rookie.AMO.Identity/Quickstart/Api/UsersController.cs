@@ -37,9 +37,9 @@ namespace Rookie.AMO.Identity.Quickstart.Api
 
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<UserDto> GetUserById(string id )
         {
-            return "value";
+            return await _userService.GetUserById(id);
         }
 
         // POST api/<UsersController>
@@ -81,11 +81,11 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         [CustomAuthorize(Role = "Admin")]
         [HttpGet("find")]
         public async Task<PagedResponseModel<UserDto>> PagedQueryAsync
-        (string name, int page, string type,string sort, bool desc,  int limit)
+        (string name, int page, string type,string sort, bool desc,string id,  int limit)
         {
             /*            var adminLocation = User.Claims.FirstOrDefault(x => x.Type == "location").Value;
             */
-            return await _userService.PagedQueryAsync(name, page, type,sort,desc, limit);
+            return await _userService.PagedQueryAsync(name, page, type,sort,desc,id, limit);
         }
     }
 }

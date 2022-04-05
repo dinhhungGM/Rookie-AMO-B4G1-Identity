@@ -127,7 +127,47 @@ namespace Rookie.AMO.Identity.DataAccessor
                     throw new Exception(result.Errors.First().Description);
                 }
             }
+            var user4 = userMgr.FindByNameAsync("Admin2").Result;
+            if (user4 == null)
+            {
+                user4 = new User
+                {
+                    FirstName = "Sarah",
+                    LastName = "Doe",
+                    FullName = "Sarah Doe",
+                    UserName = "Admin2",
+                    CodeStaff = "SD0004",
+                    Type = "Admin",
+                    Gender = "Female",
+                    Location = "HCM",
+                    JoinedDate = DateTime.Now,
+                    DateOfBirth = DateTime.ParseExact("2000-02-02", "yyyy-MM-dd", null)
+                };
+                var result = userMgr.CreateAsync(user4, "P@33word1").Result;
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.First().Description);
+                }
 
+                result = userMgr.AddClaimsAsync(user4, new List<Claim>
+                    {
+                        new Claim(IdentityModel.JwtClaimTypes.GivenName, "John"),
+                        new Claim(IdentityModel.JwtClaimTypes.FamilyName, "Doe"),
+                        new Claim(IdentityModel.JwtClaimTypes.Role, "Admin"),
+                        new Claim("location", "HCM")
+                    }).Result;
+
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.First().Description);
+                }
+
+                result = userMgr.AddToRoleAsync(user4, "Admin").Result;
+                if (!result.Succeeded)
+                {
+                    throw new Exception(result.Errors.First().Description);
+                }
+            }
             var user2 = userMgr.FindByNameAsync("Staff1").Result;
             if (user2 == null)
             {
@@ -139,6 +179,7 @@ namespace Rookie.AMO.Identity.DataAccessor
                     UserName = "Staff1",
                     CodeStaff = "SD0002",
                     Type = "Staff",
+                    Location = "HN",
                     Gender = "Male",
                     JoinedDate = DateTime.Now,
                     DateOfBirth = DateTime.ParseExact("2001-01-01", "yyyy-MM-dd", null)
@@ -178,6 +219,7 @@ namespace Rookie.AMO.Identity.DataAccessor
                     FullName = "Steve Doe",
                     UserName = "Staff2",
                     CodeStaff = "SD0003",
+                    Location = "HN",
                     Type = "Staff",
                     Gender = "FeMale",
                     JoinedDate = DateTime.Now,
