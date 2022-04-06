@@ -48,11 +48,7 @@ namespace Rookie.AMO.Identity.Bussiness.Services
             user.JoinedDate = DateTime.UtcNow;
             user.Location = adminLocation;
             user.UserName = GenerateUserName(user.FirstName, user.LastName);
-
-            if (user.Type != "Admin")
-            {
-                user.CodeStaff = GenerateStaffCode();
-            }
+            user.CodeStaff = GenerateStaffCode();
             user.EmailConfirmed = true;
             var passwordGenerator = new Password(includeLowercase: true, includeUppercase: true, includeNumeric: true, includeSpecial: true, passwordLength: 8);
             var randomPassword = passwordGenerator.Next();
