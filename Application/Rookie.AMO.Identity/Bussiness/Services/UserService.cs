@@ -243,8 +243,12 @@ namespace Rookie.AMO.Identity.Bussiness.Services
                     query = query.Where(m => m.Type == includeProperty);
                 }
             }*/
-            query = query.Concat(query1);
 
+            query = query.Concat(query1);
+            if (string.IsNullOrEmpty(id))
+            {
+                query=query.OrderByDescending(x => x.CodeStaff);
+            }
             switch (sort)
             {
                 case "codeStaff":
