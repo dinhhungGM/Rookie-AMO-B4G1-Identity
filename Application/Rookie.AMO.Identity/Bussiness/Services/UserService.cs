@@ -45,7 +45,6 @@ namespace Rookie.AMO.Identity.Bussiness.Services
         public async Task<UserDto> CreateUserAsync(UserRegistrationDto request, string adminLocation)
         {
             var user = _mapper.Map<User>(request);
-            user.JoinedDate = DateTime.UtcNow;
             user.Location = adminLocation;
             user.UserName = GenerateUserName(user.FirstName, user.LastName);
             user.CodeStaff = GenerateStaffCode();
@@ -247,7 +246,7 @@ namespace Rookie.AMO.Identity.Bussiness.Services
             query = query.Concat(query1);
             if (string.IsNullOrEmpty(id))
             {
-                query=query.OrderByDescending(x => x.CodeStaff);
+                query = query.OrderByDescending(x => x.CodeStaff);
             }
             switch (sort)
             {
