@@ -118,7 +118,8 @@ namespace IdentityServerHost.Quickstart.UI
 
             if (ModelState.IsValid)
             {
-                var check = (await _userManager.Users.ToListAsync()).FirstOrDefault(x => x.UserName.Equals(model.Username, StringComparison.Ordinal));
+                var check = (await _userManager.Users.ToListAsync()).FirstOrDefault(x => x.UserName.Equals(model.Username, StringComparison.Ordinal) && x.Disable==false);
+               
                 if (check != null)
                 {
 
