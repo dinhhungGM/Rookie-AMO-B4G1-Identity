@@ -49,14 +49,11 @@ namespace Rookie.AMO.Identity.Filters
                     var jwtSecurityToken = (JwtSecurityToken)validatedToken;
 
                     // Check Role
-                    var hasClaim = jwtSecurityToken.Claims.Any(c => c.Type == "role" && c.Value == Role);
+                    var hasClaim = jwtSecurityToken.Claims.Any(c => c.Type == "role" && Role.Split(",").Any(r => r == c.Value));
                     if (!hasClaim)
                     {
                         context.Result = new ForbidResult();
                     }
-
-                    /*claimsIdentity.AddClaim(new Claim("sub", jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "sub").Value));
-                    claimsIdentity.AddClaim(new Claim("location", jwtSecurityToken.Claims.FirstOrDefault(x => x.Type == "location").Value));*/
 
                     context.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(jwtSecurityToken.Claims));
 
