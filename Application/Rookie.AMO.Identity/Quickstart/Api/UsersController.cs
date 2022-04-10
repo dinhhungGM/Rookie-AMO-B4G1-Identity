@@ -16,7 +16,6 @@ namespace Rookie.AMO.Identity.Quickstart.Api
     [EnableCors("AllowOrigins")]
     [Route("api/[controller]")]
     [ApiController]
-    /*[Authorize]*/
     [CustomAuthorize]
     public class UsersController : ControllerBase
     {
@@ -36,8 +35,9 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         }
 
         // GET api/<UsersController>/5
+        [CustomAuthorize(Role = "Admin")]
         [HttpGet("{id}")]
-        public async Task<UserDto> GetUserById(string id )
+        public async Task<UserDto> GetUserById(string id)
         {
             return await _userService.GetUserById(id);
         }
@@ -48,7 +48,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
         public async Task<ActionResult<UserDto>> CreateUserAsync(UserRegistrationDto newUser)
         {
             var userDto = await _userService.CreateUserAsync(newUser, User.Claims.FirstOrDefault(x => x.Type == "location").Value);
-            return Created("/api/users", userDto);
+            return Created("api/users", userDto);
         }
 
         // PUT api/<UsersController>/5
@@ -62,6 +62,7 @@ namespace Rookie.AMO.Identity.Quickstart.Api
 
 
         // DELETE api/<UsersController>/5
+        [CustomAuthorize(Role = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {
@@ -78,14 +79,13 @@ namespace Rookie.AMO.Identity.Quickstart.Api
 
         }
 
+        // DELETE api/<UsersController>/find
         [CustomAuthorize(Role = "Admin")]
         [HttpGet("find")]
         public async Task<PagedResponseModel<UserDto>> PagedQueryAsync
-        (string name, int page, string type,string sort, bool desc,string id,  int limit)
+        (string name, int page, string type, string sort, bool desc, string id, int limit)
         {
-            /*            var adminLocation = User.Claims.FirstOrDefault(x => x.Type == "location").Value;
-            */
-            return await _userService.PagedQueryAsync(name, page, type,sort,desc,id, limit);
+            return await _userService.PagedQueryAsync(name, page, type, sort, desc, id, limit);
         }
     }
 }
