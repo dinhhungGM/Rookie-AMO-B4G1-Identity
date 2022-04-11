@@ -16,5 +16,7 @@ namespace IdentityServerHost.Quickstart.UI
         public static bool AutomaticRedirectAfterSignOut = true;
 
         public static string InvalidCredentialsErrorMessage = "Invalid username or password";
+        public static string AccountIsDisable = "Your account is disabled. Please contact IT team.";
+
     }
 }
