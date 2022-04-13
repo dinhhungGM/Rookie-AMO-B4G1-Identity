@@ -306,7 +306,7 @@ namespace Rookie.AMO.Identity.Bussiness.Services
                     }
                     else
                     {
-                        query = query.OrderBy(x => x.CodeStaff);
+                        query = query.OrderBy(x => x.Type);
 
                     }
                     break;

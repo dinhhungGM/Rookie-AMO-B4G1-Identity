@@ -27,7 +27,6 @@ namespace Rookie.AMO.Identity.Quickstart.Api
             _userService = userService;
         }
         // GET: api/<UsersController>
-        [CustomAuthorize(Role = "Admin")]
         [HttpGet]
         public async Task<IEnumerable<UserDto>> GetListUser()
         {
