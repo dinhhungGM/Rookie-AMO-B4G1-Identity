@@ -108,7 +108,7 @@ namespace IdentityServerHost.Quickstart.UI
                     }
 
                     return Redirect(model.ReturnUrl);
-                }
+                }   
                 else
                 {
                     // since we don't have a valid context, then we just go back to the home page
@@ -118,10 +118,9 @@ namespace IdentityServerHost.Quickstart.UI
 
             if (ModelState.IsValid)
             {
-                var check = (await _userManager.Users.ToListAsync()).FirstOrDefault(x => x.UserName.Equals(model.Username, StringComparison.Ordinal));
-                if (check != null)
+                var check = (await _userManager.Users.ToListAsync()).FirstOrDefault(x => x.UserName.Equals(model.Username, StringComparison.Ordinal) );
+                if (check != null && check.Disable==false)
                 {
-
                     var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
                     if (result.Succeeded)
                     {
@@ -177,7 +176,14 @@ namespace IdentityServerHost.Quickstart.UI
                 }
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId: context?.Client.ClientId));
-                ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
+                if (check != null&& check.Disable == true) { 
+                    ModelState.AddModelError(string.Empty, AccountOptions.AccountIsDisable);
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, AccountOptions.InvalidCredentialsErrorMessage);
+
+                }
             }
 
             // something went wrong, show form with error
