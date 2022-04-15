@@ -281,7 +281,16 @@ namespace IdentityServerHost.Quickstart.UI
                 {
                     foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError(string.Empty, error.Description);
+                        if(error.Description== "Incorrect password.")
+                        {
+                            ModelState.AddModelError(string.Empty, "Old Password is incorrect.");
+
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+
+                        }
                     }
                     return View();
                 }
